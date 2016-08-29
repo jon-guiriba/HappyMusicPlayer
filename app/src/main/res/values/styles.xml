@@ -1,0 +1,25 @@
+<resources>
+
+    <style name="AppTheme" parent="@style/Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="playListListView" parent="android:style/Widget.ListView">
+        <item name="background">@color/colorPrimaryDark</item>
+        <item name="android:divider">@color/colorPrimaryDark</item>
+        <item name="android:dividerHeight">1dp</item>
+        <item name="android:listSelector">@drawable/img_btn_play</item>
+        <item name="android:drawSelectorOnTop">true</item>
+        <item name="android:cacheColorHint">#00000000</item>
+    </style>
+
+    <style name="SeekBar" parent="Theme.AppCompat.Light">
+        <item name="android:tileMode">repeat</item>
+        <item name="android:antialias">true</item>
+        <item name="android:dither">false</item>
+        <item name="android:filter">false</item>
+    </style>
+
+</resources>

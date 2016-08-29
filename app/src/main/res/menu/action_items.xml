@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_sleep_timer"
+        android:title="Sleep Timer"
+        app:showAsAction="never"
+        />
+
+    <item
+        android:id="@+id/action_equalizer"
+        android:title="Equalizer"
+        app:showAsAction="never"
+        />
+
+    <item
+        android:id="@+id/action_settings"
+        android:title="Settings"
+        android:icon="@drawable/img_btn_settings"
+        app:showAsAction="always"
+        />
+</menu>
