@@ -83,7 +83,6 @@ public class UpdateAllSongsPlayListTask extends AsyncTask<Object, Void, Void> {
     }
 
     private void addSongToDB(SongModel songFromDisk) {
-        Log.i("Adding Song: ", songFromDisk.getName());
         SQLiteDatabase db = DatabaseHelper.getInstance(context).getWritableDatabase();
 
         ContentValues cv = new ContentValues();

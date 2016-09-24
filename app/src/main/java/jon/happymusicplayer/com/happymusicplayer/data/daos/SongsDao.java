@@ -3,10 +3,12 @@ package jon.happymusicplayer.com.happymusicplayer.data.daos;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.List;
 import jon.happymusicplayer.com.happymusicplayer.data.managers.DatabaseHelper;
 import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 import jon.happymusicplayer.com.happymusicplayer.data.contracts.SongsContract;
+import jon.happymusicplayer.com.happymusicplayer.utils.Utilities;
 
 /**
  * Created by Jon on 8/29/2016.
@@ -59,7 +62,7 @@ public class SongsDao {
     public SongModel getSingleByPathAndPlayList(String path, int playListId) {
 
         String query = "SELECT  s.*" +
-                "       FROM    playlist_items pi"  +
+                "       FROM    playlist_items pi" +
                 "               INNER JOIN playlists p ON p.id = pi.playlist_id" +
                 "               INNER JOIN songs s ON s.id = pi.song_id" +
                 "       WHERE   p.id = ?" +
@@ -108,7 +111,7 @@ public class SongsDao {
 
     public List<SongModel> getAllByPlayList(int playListId) {
         String query = "SELECT  s.*" +
-                "       FROM    playlist_items pi"  +
+                "       FROM    playlist_items pi" +
                 "               INNER JOIN playlists p ON p.id = pi.playlist_id" +
                 "               INNER JOIN songs s ON s.id = pi.song_id" +
                 "       WHERE   p.id = ?";
@@ -128,6 +131,39 @@ public class SongsDao {
                 DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
                 songsList.add(new SongModel(id, name, path, format.parse(dateModified)));
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            cursor.close();
+        }
+
+        return songsList;
+    }
+
+    public List<SongModel> getAllRecentlyAdded() {
+        String query = "SELECT  s.*" +
+                "       FROM    playlist_items pi" +
+                "               INNER JOIN playlists p ON p.id = pi.playlist_id" +
+                "               INNER JOIN songs s ON s.id = pi.song_id";
+
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor == null) return null;
+
+        List<SongModel> songsList = new LinkedList<>();
+
+        try {
+            while (cursor.moveToNext()) {
+                int id = cursor.getInt(cursor.getColumnIndex(SongsContract.SongsEntry.ID));
+                String name = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.NAME));
+                String path = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.PATH));
+                String dateModified = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.DATE_MODIFIED));
+                Date currentDate = Calendar.getInstance().getTime();
+
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+                if (Utilities.millisToDays(currentDate.getTime() - format.parse(dateModified).getTime()) < 3)
+                    songsList.add(new SongModel(id, name, path, format.parse(dateModified)));
             }
         } catch (ParseException e) {
             e.printStackTrace();

@@ -6,6 +6,10 @@ import android.media.MediaPlayer;
 import java.io.IOException;
 import java.util.List;
 
+import jon.happymusicplayer.com.happymusicplayer.R;
+import jon.happymusicplayer.com.happymusicplayer.data.daos.PlayListsDao;
+import jon.happymusicplayer.com.happymusicplayer.data.daos.SongsDao;
+import jon.happymusicplayer.com.happymusicplayer.data.models.PlayListModel;
 import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 
 /**
@@ -18,18 +22,37 @@ public class AppMusicPlayer extends MediaPlayer {
     private List<SongModel> playList;
     private SongModel song;
     private boolean isPrepared;
+    private Context context;
 
-
-    public void playSong(int index) throws IOException {
-        song = playList.get(index);
-        appMusicPlayer.reset();
-        appMusicPlayer.setDataSource(song.getPath());
-        appMusicPlayer.prepare();
-        appMusicPlayer.start();
+    public AppMusicPlayer(Context context) {
+        this.context = context;
     }
 
-    public void setPlayList(List<SongModel> playList) {
-        this.playList = playList;
+    public void playSong(int index) {
+        song = playList.get(index);
+
+        try {
+            appMusicPlayer.reset();
+            appMusicPlayer.setDataSource(song.getPath());
+            appMusicPlayer.prepare();
+            appMusicPlayer.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void setPlayList(String playListName) {
+        PlayListsDao playListsDao = new PlayListsDao(this.context);
+        SongsDao songsDao = new SongsDao(this.context);
+
+        if (playListName.equals(context.getResources().getString(R.string.recently_added))) {
+            playList = songsDao.getAllRecentlyAdded();
+            return;
+        }
+
+        int playListId = playListsDao.getSingleByName(playListName).getId();
+        playList = songsDao.getAllByPlayList(playListId);
     }
 
     public void play() {
@@ -46,9 +69,18 @@ public class AppMusicPlayer extends MediaPlayer {
 
     public static synchronized AppMusicPlayer getInstance(Context context) {
         if (appMusicPlayer == null) {
-            appMusicPlayer = new AppMusicPlayer();
+            appMusicPlayer = new AppMusicPlayer(context);
         }
         return appMusicPlayer;
+    }
+
+
+    public List<SongModel> getPlayList() {
+        return this.playList;
+    }
+
+    public SongModel getSong() {
+        return song;
     }
 
 

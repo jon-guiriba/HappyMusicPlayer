@@ -28,4 +28,9 @@ public class Utilities {
         Random rand = new Random();
         return rand.nextInt((max - 1) - min + 1) + min;
     }
+
+    public static int millisToDays(long millis){
+        return (int) millis / (24 * 60 * 60 * 1000);
+
+    }
 }
