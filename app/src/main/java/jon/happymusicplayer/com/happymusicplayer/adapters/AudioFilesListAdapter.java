@@ -3,7 +3,7 @@ package jon.happymusicplayer.com.happymusicplayer.adapters;
 import android.content.Context;
 import android.widget.ArrayAdapter;
 
-import jon.happymusicplayer.com.happymusicplayer.models.SongModel;
+import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 
 /**
  * Created by Jon on 8/20/2016.

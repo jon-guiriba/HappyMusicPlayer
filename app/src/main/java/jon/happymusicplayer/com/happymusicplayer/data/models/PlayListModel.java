@@ -1,4 +1,4 @@
-package jon.happymusicplayer.com.happymusicplayer.models;
+package jon.happymusicplayer.com.happymusicplayer.data.models;
 
 /**
  * Created by Jon on 8/14/2016.

@@ -1,4 +1,4 @@
-package jon.happymusicplayer.com.happymusicplayer.models;
+package jon.happymusicplayer.com.happymusicplayer.data.contracts;
 
 import android.provider.BaseColumns;
 
@@ -19,7 +19,7 @@ public final class PlaylistsContract {
         public static final String SQL_CREATE =
                 "CREATE TABLE " + TABLE_NAME +
                 "( " + ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                       NAME + " VARCHAR(125) NOT NULL" +
+                       NAME + " VARCHAR(125) NOT NULL UNIQUE" +
                 ")";
 
         public static final String SQL_DROP = "DROP TABLE " + TABLE_NAME;

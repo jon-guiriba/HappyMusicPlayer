@@ -1,10 +1,13 @@
 package jon.happymusicplayer.com.happymusicplayer;
 
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -18,14 +21,17 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
-import jon.happymusicplayer.com.happymusicplayer.data.DatabaseHelper;
-import jon.happymusicplayer.com.happymusicplayer.data.MusicFilesManager;
+import jon.happymusicplayer.com.happymusicplayer.data.AppMusicPlayer;
+import jon.happymusicplayer.com.happymusicplayer.data.daos.PlayListsDao;
+import jon.happymusicplayer.com.happymusicplayer.data.managers.DatabaseHelper;
 import jon.happymusicplayer.com.happymusicplayer.adapters.OnTaskCompleted;
-import jon.happymusicplayer.com.happymusicplayer.data.PlayListManager;
-import jon.happymusicplayer.com.happymusicplayer.data.UpdateAllSongsPlayListTask;
-import jon.happymusicplayer.com.happymusicplayer.models.SongModel;
+import jon.happymusicplayer.com.happymusicplayer.data.daos.SongsDao;
+import jon.happymusicplayer.com.happymusicplayer.tasks.UpdateAllSongsPlayListTask;
+import jon.happymusicplayer.com.happymusicplayer.data.models.PlayListModel;
+import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 import jon.happymusicplayer.com.happymusicplayer.utils.Utilities;
 
 
@@ -48,21 +54,22 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
     private ImageButton btnBackward;
     private ImageButton btnRepeat;
     private ImageButton btnShuffle;
-    private ListView audioFilesListView;
-    private SearchView searchView;
+    private ListView lvCurrentPlayList;
+    private ListView lvDrawerPlayList;
+    private ListView lvFeatures;
     private TextView tvCurrentAudioFile;
+    private SearchView searchView;
     private SeekBar sbSongProgressBar;
     private Handler songProgressBarHandler = new Handler();
 
-    private List<SongModel> currentPlayList;
-    private SongModel currentSong;
+    private List<SongModel> playList;
+    private SongModel song;
 
     private boolean isShuffle = false;
-    private int currentAudioFileIndex = 0;
+    private int songIndex = 0;
 
-    static MediaPlayer mediaPlayer;
-    private ListView lvPlayList;
-    private ListView lvFeatures;
+    AppMusicPlayer player;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,75 +83,94 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
             actionBar.setDisplayShowTitleEnabled(false);
         }
 
+        init();
+        loadPreferences();
+        setupDrawerPlayLists();
+
+        new UpdateAllSongsPlayListTask(this, this).execute();
+    }
+
+    private void init() {
         btnPlay = (ImageButton) findViewById(R.id.btnPlay);
         btnForward = (ImageButton) findViewById(R.id.btnForward);
         btnBackward = (ImageButton) findViewById(R.id.btnBackward);
         btnRepeat = (ImageButton) findViewById(R.id.btnRepeat);
         btnShuffle = (ImageButton) findViewById(R.id.btnShuffle);
-        audioFilesListView = (ListView) findViewById(R.id.audioFilesListView);
-        tvCurrentAudioFile = (TextView) findViewById(R.id.tv_currentAudioFile);
-        sbSongProgressBar = (SeekBar) findViewById(R.id.trackProgressBar);
-        lvPlayList = (ListView) findViewById(R.id.lvPlaylist);
+        lvCurrentPlayList = (ListView) findViewById(R.id.lvCurrentPlayList);
+        tvCurrentAudioFile = (TextView) findViewById(R.id.tvCurrentAudioFile);
+        lvDrawerPlayList = (ListView) findViewById(R.id.lvDrawerPlaylist);
+        sbSongProgressBar = (SeekBar) findViewById(R.id.sbTrackProgressBar);
 
         btnPlay.setOnClickListener(this);
         btnForward.setOnClickListener(this);
         btnBackward.setOnClickListener(this);
         btnRepeat.setOnClickListener(this);
         btnShuffle.setOnClickListener(this);
-
-        updateCurrentPlayList();
-
-        MusicFilesManager musicFilesManager = new MusicFilesManager(this);
-        PlayListManager playListManager = new PlayListManager();
-
         sbSongProgressBar.setOnSeekBarChangeListener(this);
 
-        int fileCount = currentPlayList.size();
+        player = AppMusicPlayer.getInstance(this);
+        player.setOnCompletionListener(this);
 
-        String[] fileNames = new String[fileCount];
-        for (int i = 0; i < fileCount; i++) {
-            fileNames[i] = currentPlayList.get(i).getName();
-        }
-
-        ArrayAdapter<String> musicFilesAdapter = new ArrayAdapter<String>(this, R.layout.audiofile_item, fileNames);
-        audioFilesListView.setAdapter(musicFilesAdapter);
-        audioFilesListView.setOnItemClickListener(this);
-
-        ArrayAdapter<String> playListAdapater = new ArrayAdapter<String>(this, R.layout.playlist_item, playListManager.getAllPlaylists());
-        lvPlayList.setAdapter(playListAdapater);
-        lvPlayList.setOnItemClickListener(this);
-
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setOnCompletionListener(this);
-
-        new UpdateAllSongsPlayListTask(this,this).execute();
-
+        lvCurrentPlayList.setOnItemClickListener(this);
     }
 
-    private void toggleMediaPlayerRepeatState() {
-        switch (repeatState) {
+    private void loadPreferences() {
+        SharedPreferences defPreference = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isShuffle = defPreference.getBoolean(getResources().getString(R.string.is_shuffle), false);
+        String repeatState = defPreference.getString(getResources().getString(R.string.repeat_state), REPEATSTATE_OFF);
+        String playListName = defPreference.getString(getResources().getString(R.string.last_playlist), getResources().getString(R.string.all_songs));
+
+        updatePlayList(playListName);
+        updateRepeatState(repeatState);
+        updateShuffleState(isShuffle);
+    }
+
+    private void updatePlayList(String playListName) {
+        PlayListsDao playListsDao = new PlayListsDao(this);
+        SongsDao songsDao = new SongsDao(this);
+
+        PlayListModel playList = playListsDao.getSingleByName(playListName);
+        List<SongModel> songs = songsDao.getAllByPlayList(playList.getId());
+
+        player.setPlayList(songs);
+    }
+
+    private void setupDrawerPlayLists() {
+        List<String> playLists = getPlayLists();
+        ArrayAdapter<String> playListAdapater = new ArrayAdapter<String>(this, R.layout.playlist_item, playLists);
+
+        lvDrawerPlayList.setAdapter(playListAdapater);
+        lvDrawerPlayList.setOnItemClickListener(this);
+    }
+
+    private List<String> getPlayLists() {
+        List<PlayListModel> playLists = DatabaseHelper.getInstance(this).getAllPlayLists();
+        List<String> playListNames = new LinkedList<>();
+
+        for (PlayListModel playList : playLists) {
+            playListNames.add(playList.getName());
+        }
+
+        return playListNames;
+    }
+
+
+    private void toggleMediaPlayerRepeatState(String state) {
+        switch (state) {
             case REPEATSTATE_OFF:
-                repeatState = REPEATSTATE_ALL;
-                mediaPlayer.setLooping(false);
-                btnRepeat.setImageResource(R.drawable.img_btn_repeat);
+                updateRepeatState(REPEATSTATE_ALL);
                 break;
             case REPEATSTATE_ALL:
-                repeatState = REPEATSTATE_ONE;
-                mediaPlayer.setLooping(true);
-                btnRepeat.setImageResource(R.drawable.img_btn_repeat_one);
+                updateRepeatState(REPEATSTATE_ONE);
                 break;
             case REPEATSTATE_ONE:
-                repeatState = REPEATSTATE_OFF;
-                mediaPlayer.setLooping(false);
-                btnRepeat.setImageResource(R.drawable.img_btn_repeat_disabled);
+                updateRepeatState(REPEATSTATE_OFF);
                 break;
-
         }
     }
 
-
-    private void toggleMediaPlayerPlayState() {
-        if (mediaPlayer.isPlaying()) {
+    private void togglePlayState() {
+        if (player.isPlaying()) {
             updatePlayStatus(PLAYERSTATE_PAUSED);
             songProgressBarHandler.removeCallbacks(trackBarUpdateTask);
         } else {
@@ -153,15 +179,42 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
         }
     }
 
+    private void updateRepeatState(String state) {
 
-    private void toggleMediaPlayerShuffleState() {
+        switch (state) {
+            case REPEATSTATE_ALL:
+                repeatState = REPEATSTATE_ALL;
+                player.setLooping(false);
+                btnRepeat.setImageResource(R.drawable.img_btn_repeat);
+                break;
+            case REPEATSTATE_ONE:
+                repeatState = REPEATSTATE_ONE;
+                player.setLooping(true);
+                btnRepeat.setImageResource(R.drawable.img_btn_repeat_one);
+                break;
+            case REPEATSTATE_OFF:
+                repeatState = REPEATSTATE_OFF;
+                player.setLooping(false);
+                btnRepeat.setImageResource(R.drawable.img_btn_repeat_disabled);
+                break;
+        }
+
+        updateRepeatStateSettings();
+
+    }
+
+    private void toggleShuffleState(Boolean isShuffle) {
+        updateShuffleState(!isShuffle);
+    }
+
+    private void updateShuffleState(Boolean isShuffle) {
         if (isShuffle) {
             btnShuffle.setImageResource(R.drawable.img_btn_shuffle_disabled);
-            isShuffle = false;
         } else {
             btnShuffle.setImageResource(R.drawable.img_btn_shuffle);
-            isShuffle = true;
         }
+        this.isShuffle = isShuffle;
+        updateShuffleStateSettings();
 
     }
 
@@ -169,26 +222,26 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
         switch (state) {
             case PLAYERSTATE_PLAYING:
                 btnPlay.setImageResource(R.drawable.img_btn_paused);
-                mediaPlayer.start();
+                player.start();
                 break;
             case PLAYERSTATE_PAUSED:
                 btnPlay.setImageResource(R.drawable.img_btn_play);
-                mediaPlayer.pause();
+                player.pause();
                 break;
         }
     }
 
     private void playSong(int audioFileIndex) {
-        currentAudioFileIndex = audioFileIndex;
-        currentSong = currentPlayList.get(currentAudioFileIndex);
-
+        songIndex = audioFileIndex;
+        song = playList.get(songIndex);
+        Log.i("here", song.getDateModified().toString());
         try {
-            mediaPlayer.reset();
-            mediaPlayer.setDataSource(currentSong.getPath());
-            mediaPlayer.prepare();
-            mediaPlayer.start();
+            player.reset();
+            player.setDataSource(song.getPath());
+            player.prepare();
+            player.start();
 
-            tvCurrentAudioFile.setText(currentSong.getName());
+            tvCurrentAudioFile.setText(song.getName());
             updatePlayStatus(PLAYERSTATE_PLAYING);
 
             sbSongProgressBar.setProgress(0);
@@ -205,14 +258,33 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
 
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-
         switch (v.getId()) {
             case R.id.item_audio_files_list:
+                Log.i("clickList", "" + position);
                 playSong(position);
                 break;
-            case R.id.item_play_list:
+            case R.id.drawer_item_play_list:
+                String playListName = (String) lvDrawerPlayList.getItemAtPosition(position);
+                updatePlayList(playListName);
+                updatePlayListDisplay(getFileNamesFromPlayList(playListName));
                 break;
         }
+    }
+
+    private String[] getFileNamesFromPlayList(String playListName) {
+        PlayListsDao playListsDao = new PlayListsDao(this);
+        SongsDao songsDao = new SongsDao(this);
+
+        PlayListModel playList = playListsDao.getSingleByName(playListName);
+        List<SongModel> songs = songsDao.getAllByPlayList(playList.getId());
+
+        String[] fileNames = new String[songs.size()];
+
+        for (int i = 0; i < fileNames.length; i++) {
+            fileNames[i] = songs.get(i).getName();
+        }
+
+        return fileNames;
     }
 
 
@@ -227,37 +299,32 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
     public void onClick(final View v) {
         switch (v.getId()) {
             case R.id.btnPlay:
-                toggleMediaPlayerPlayState();
+                togglePlayState();
                 break;
 
             case R.id.btnBackward:
-                if (currentAudioFileIndex == currentPlayList.size() - 1)
+                if (songIndex == playList.size() - 1)
                     playSong(0);
                 else
-                    playSong(currentAudioFileIndex - 1);
-
-                ;
+                    playSong(songIndex - 1);
                 break;
 
             case R.id.btnForward:
                 if (isShuffle) {
-                    playSong(Utilities.getRandomInt(currentPlayList.size(), 0));
+                    playSong(Utilities.getRandomInt(playList.size(), 0));
                 }
-
-                if (currentAudioFileIndex == 0)
-                    playSong(currentPlayList.size() - 1);
+                if (songIndex == 0)
+                    playSong(playList.size() - 1);
                 else
-                    playSong(currentAudioFileIndex + 1);
-
-
+                    playSong(songIndex + 1);
                 break;
 
             case R.id.btnRepeat:
-                toggleMediaPlayerRepeatState();
+                toggleMediaPlayerRepeatState(repeatState);
                 break;
 
             case R.id.btnShuffle:
-                toggleMediaPlayerShuffleState();
+                toggleShuffleState(isShuffle);
                 break;
 
         }
@@ -267,17 +334,17 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mediaPlayer.release();
+        player.release();
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
 
         if (repeatState.equals(REPEATSTATE_ALL)) {
-            currentAudioFileIndex++;
+            songIndex++;
             if (isShuffle)
-                currentAudioFileIndex = Utilities.getRandomInt(currentPlayList.size(), 0);
-            playSong(currentAudioFileIndex);
+                songIndex = Utilities.getRandomInt(playList.size(), 0);
+            playSong(songIndex);
         }
 
     }
@@ -285,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
     private Runnable trackBarUpdateTask = new Runnable() {
         @Override
         public void run() {
-            int trackProgress = (int) (Utilities.getPercentage(mediaPlayer.getCurrentPosition(), mediaPlayer.getDuration()));
+            int trackProgress = (int) (Utilities.getPercentage(player.getCurrentPosition(), player.getDuration()));
             sbSongProgressBar.setProgress(trackProgress);
             updateProgressBar();
         }
@@ -304,21 +371,46 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         songProgressBarHandler.removeCallbacks(trackBarUpdateTask);
-        int currentPosition = Utilities.getProgressToTimer(seekBar.getProgress(), mediaPlayer.getDuration());
-        mediaPlayer.seekTo(currentPosition);
+        int currentPosition = Utilities.getProgressToTimer(seekBar.getProgress(), player.getDuration());
+        player.seekTo(currentPosition);
         updateProgressBar();
+    }
+
+    @Override
+    public void onTaskCompleted() {
+        SongsDao songsDao = new SongsDao(this);
+        playList = songsDao.getAllByPlayList(1);
+        int fileCount = playList.size();
+        String[] fileNames = new String[fileCount];
+
+        for (int i = 0; i < fileCount; i++) {
+            fileNames[i] = playList.get(i).getName();
+        }
+
+        updatePlayListDisplay(fileNames);
     }
 
     public void updateProgressBar() {
         songProgressBarHandler.postDelayed(trackBarUpdateTask, SONG_PROGRESS_BAR_REFRESH_RATE);
     }
 
-    private void updateCurrentPlayList(){
-        currentPlayList = DatabaseHelper.getInstance(this).getAllSongs();
+    private void updatePlayListDisplay(String[] fileNames) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.audiofile_item, fileNames);
+        lvCurrentPlayList.setAdapter(adapter);
     }
 
-    @Override
-    public void onTaskCompleted() {
-        updateCurrentPlayList();
+
+    private void updateRepeatStateSettings() {
+        SharedPreferences.Editor defPreference = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        defPreference.putString(getResources().getString(R.string.repeat_state), repeatState);
+        defPreference.apply();
+        defPreference.clear();
+    }
+
+    private void updateShuffleStateSettings() {
+        SharedPreferences.Editor defPreference = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        defPreference.putBoolean(getResources().getString(R.string.is_shuffle), isShuffle);
+        defPreference.apply();
+        defPreference.clear();
     }
 }

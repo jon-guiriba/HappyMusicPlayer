@@ -1,15 +1,13 @@
-package jon.happymusicplayer.com.happymusicplayer.data;
+package jon.happymusicplayer.com.happymusicplayer.data.managers;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
-import android.webkit.MimeTypeMap;
 
+import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
-import jon.happymusicplayer.com.happymusicplayer.models.SongModel;
+import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 
 
 public class MusicFilesManager {
@@ -40,7 +38,7 @@ public class MusicFilesManager {
                 String filePath = songsCursor.getString(songsCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
 
                 if (isMusicFile(filePath)) {
-                    SongModel file = new SongModel(fileName, filePath);
+                    SongModel file = new SongModel(0, fileName, filePath);
                     fileModels.put(filePath, file);
                     i++;
                 }

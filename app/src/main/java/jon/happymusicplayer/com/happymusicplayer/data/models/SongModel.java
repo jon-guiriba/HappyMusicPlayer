@@ -1,4 +1,6 @@
-package jon.happymusicplayer.com.happymusicplayer.models;
+package jon.happymusicplayer.com.happymusicplayer.data.models;
+
+import java.util.Date;
 
 /**
  * Created by Jon on 8/14/2016.
@@ -9,13 +11,19 @@ public class SongModel {
     private int id;
     private String name;
     private String path;
-    private int playListId;
+    private Date dateModified;
 
-    public SongModel(int id, String name, String path, int playListId) {
+    public SongModel(int id, String name, String path) {
         this.id = id;
         this.name = name;
         this.path = path;
-        this.playListId = playListId;
+    }
+
+    public SongModel(int id, String name, String path, Date dateModified) {
+        this.id = id;
+        this.name = name;
+        this.path = path;
+        this.dateModified = dateModified;
     }
 
     public int getId() {
@@ -38,12 +46,8 @@ public class SongModel {
         return path;
     }
 
-    public int getPlayListId() {
-        return playListId;
-    }
-
-    public void setPlayListId(int playListId) {
-        this.playListId = playListId;
+    public Date getDateModified() {
+        return dateModified;
     }
 
 }

@@ -3,4 +3,7 @@
     <string name="sdcard_path">HappyMusicPlayer</string>
     <string name="all_songs">All Songs</string>
     <string name="recently_added">Recently Added</string>
+    <string name="repeat_state">repeatState</string>
+    <string name="is_shuffle">isShuffle</string>
+    <string name="last_playlist">lastPlayList</string>
 </resources>

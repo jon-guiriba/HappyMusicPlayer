@@ -1,4 +1,4 @@
-package jon.happymusicplayer.com.happymusicplayer.models;
+package jon.happymusicplayer.com.happymusicplayer.data.contracts;
 
 import android.provider.BaseColumns;
 
@@ -15,17 +15,17 @@ public final class SongsContract {
         public static final String ID = "id";
         public static final String NAME = "name";
         public static final String PATH = "path";
-        public static final String FK_PLAYLIST = "fk_play_list";
+        public static final String DATE_MODIFIED = "date_modified";
 
-        public static final String[] ALL = {ID, NAME, PATH, FK_PLAYLIST};
+        public static final String[] ALL = {ID, NAME, PATH};
 
         public static final String SQL_CREATE =
                 "CREATE TABLE " + TABLE_NAME +
                         "( " +
                         ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                         NAME + " VARCHAR(80) NOT NULL, " +
-                        PATH + " VARCHAR(255) NOT NULL, " +
-                        FK_PLAYLIST + " INTEGER REFERENCES " + PlaylistsContract.PlaylistsEntry.TABLE_NAME +
+                        PATH + " VARCHAR(255) NOT NULL UNIQUE, " +
+                        DATE_MODIFIED + " DATE NOT NULL DEFAULT CURRENT_DATE " +
                         ")";
 
         public static final String SQL_DROP = "DROP TABLE " + TABLE_NAME;

@@ -1,13 +1,13 @@
-package jon.happymusicplayer.com.happymusicplayer.data;
+package jon.happymusicplayer.com.happymusicplayer.data.daos;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import jon.happymusicplayer.com.happymusicplayer.models.PlayListModel;
-import jon.happymusicplayer.com.happymusicplayer.models.PlaylistsContract;
-import jon.happymusicplayer.com.happymusicplayer.models.SongModel;
-import jon.happymusicplayer.com.happymusicplayer.models.SongsContract;
+import jon.happymusicplayer.com.happymusicplayer.data.managers.DatabaseHelper;
+import jon.happymusicplayer.com.happymusicplayer.data.models.PlayListModel;
+import jon.happymusicplayer.com.happymusicplayer.data.contracts.PlaylistsContract;
+import jon.happymusicplayer.com.happymusicplayer.data.contracts.SongsContract;
 
 /**
  * Created by Jon on 8/29/2016.

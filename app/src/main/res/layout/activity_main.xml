@@ -13,19 +13,19 @@
         tools:context=".MainActivity">
 
         <ListView
-            android:id="@+id/audioFilesListView"
+            android:id="@+id/lvCurrentPlayList"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/trackProgressBar"
+            android:layout_above="@+id/sbTrackProgressBar"
             android:layout_alignParentStart="true"
             android:layout_marginBottom="5dp"
             android:background="@color/background_material_light" />
 
         <SeekBar
-            android:id="@+id/trackProgressBar"
+            android:id="@+id/sbTrackProgressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/tv_currentAudioFile"
+            android:layout_above="@+id/tvCurrentAudioFile"
             android:layout_alignParentStart="true"
             android:layout_toStartOf="@+id/tv_track_progress_label"
             android:progress="0"
@@ -36,12 +36,12 @@
             android:id="@+id/tv_track_progress_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/trackProgressBar"
+            android:layout_alignBottom="@+id/sbTrackProgressBar"
             android:layout_alignParentEnd="true"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <TextView
-            android:id="@+id/tv_currentAudioFile"
+            android:id="@+id/tvCurrentAudioFile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/btnPlay"
@@ -70,7 +70,7 @@
             android:id="@+id/btnForward"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_currentAudioFile"
+            android:layout_below="@+id/tvCurrentAudioFile"
             android:layout_marginBottom="5dp"
             android:layout_marginStart="25dp"
             android:layout_toEndOf="@+id/btnPlay"
@@ -83,7 +83,7 @@
             android:id="@+id/btnBackward"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_currentAudioFile"
+            android:layout_below="@+id/tvCurrentAudioFile"
             android:layout_marginBottom="5dp"
             android:layout_marginEnd="25dp"
             android:layout_toStartOf="@+id/btnPlay"
@@ -96,7 +96,7 @@
             android:id="@+id/btnRepeat"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_currentAudioFile"
+            android:layout_below="@+id/tvCurrentAudioFile"
             android:layout_marginBottom="5dp"
             android:layout_marginStart="25dp"
             android:layout_toEndOf="@+id/btnForward"
@@ -109,7 +109,7 @@
             android:id="@+id/btnShuffle"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_currentAudioFile"
+            android:layout_below="@+id/tvCurrentAudioFile"
             android:layout_marginBottom="5dp"
             android:layout_marginEnd="25dp"
             android:layout_toStartOf="@+id/btnBackward"
@@ -123,7 +123,7 @@
 
     <!-- The navigation drawer -->
     <ListView
-        android:id="@+id/lvPlaylist"
+        android:id="@+id/lvDrawerPlaylist"
         android:layout_width="150dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
