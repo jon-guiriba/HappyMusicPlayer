@@ -46,8 +46,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
     private SongModel selectedSong;
     AppMusicPlayer player;
 
-    private PopupWindow popupWindow;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,8 +134,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         presenter.showSongOptions(view);
-
-//        selectedSong = (SongModel) lvCurrentPlaylist.getItemAtPosition(position);
         selectedSong = (SongModel) parent.getItemAtPosition(position);
         return true;
     }
@@ -159,7 +155,6 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
 
             case R.id.drawer_item_play_list:
                 String playListName = (String) parent.getItemAtPosition(position);
-//                String playListName = (String) lvDrawerPlaylist.getItemAtPosition(position);
 
                 if (playListName.equals(getResources().getString(R.string.add_new))) {
                     presenter.setupCreateNewPlaylistPopupWindow();
@@ -187,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
                 PlaylistItemsDao plItemsDao = new PlaylistItemsDao(this);
                 plItemsDao.addNewPlaylistItem(playlist.getId(), selectedSong.getId());
 
-                popupWindow.dismiss();
+                presenter.hideAddPlaylistPopupWindow();
                 break;
         }
     }
@@ -229,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
                 PlayListsDao plDao = new PlayListsDao(this);
                 plDao.addNewPlaylist(presenter.getAddNewPlaylistText());
                 presenter.updateDrawerPlaylist(player.getAllPlayLists());
-                popupWindow.dismiss();
+                presenter.hideCreateNewPlaylistPopupWindow();
                 break;
         }
     }

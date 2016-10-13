@@ -214,6 +214,13 @@ public class Presenter {
         songOptions.dismiss();
     }
 
+    public void hideCreateNewPlaylistPopupWindow() {
+        createNewPlaylistPopupWindow.dismiss();
+    }
+    public void hideAddPlaylistPopupWindow() {
+        addToPlaylistPopupWindow.dismiss();
+    }
+
     public String getAddNewPlaylistText() {
         return etAddNewPlaylist.getText().toString();
     }
