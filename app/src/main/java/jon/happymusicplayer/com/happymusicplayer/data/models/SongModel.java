@@ -43,7 +43,7 @@ public class SongModel {
     }
 
     public String toString() {
-        return path;
+        return name;
     }
 
     public Date getDateModified() {

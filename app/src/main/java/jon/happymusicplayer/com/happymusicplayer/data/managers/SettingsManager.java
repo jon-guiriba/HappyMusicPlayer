@@ -9,12 +9,12 @@ import jon.happymusicplayer.com.happymusicplayer.R;
 /**
  * Created by Jon on 9/25/2016.
  */
-public class Settings {
+public class SettingsManager {
 
     private static Context context;
 
     public static void setContext(Context context){
-        Settings.context = context;
+        SettingsManager.context = context;
     }
 
     public static void updateRepeatStateSettings(String value) {

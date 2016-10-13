@@ -5,17 +5,16 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import jon.happymusicplayer.com.happymusicplayer.R;
 import jon.happymusicplayer.com.happymusicplayer.adapters.OnTaskCompleted;
-import jon.happymusicplayer.com.happymusicplayer.data.managers.DatabaseHelper;
+import jon.happymusicplayer.com.happymusicplayer.data.DatabaseHelper;
 import jon.happymusicplayer.com.happymusicplayer.data.daos.PlayListsDao;
 import jon.happymusicplayer.com.happymusicplayer.data.daos.SongsDao;
-import jon.happymusicplayer.com.happymusicplayer.data.contracts.PlayListItemsContract;
+import jon.happymusicplayer.com.happymusicplayer.data.contracts.PlaylistItemsContract;
 import jon.happymusicplayer.com.happymusicplayer.data.managers.MusicFilesManager;
 import jon.happymusicplayer.com.happymusicplayer.data.models.PlayListModel;
 import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
@@ -77,9 +76,9 @@ public class UpdateAllSongsPlayListTask extends AsyncTask<Object, Void, Void> {
 
         ContentValues cv = new ContentValues();
 
-        cv.put(PlayListItemsContract.PlayListItemsEntry.PLAYLIST_ID, playlist.getId());
-        cv.put(PlayListItemsContract.PlayListItemsEntry.SONG_ID, song.getId());
-        db.insert(PlayListItemsContract.PlayListItemsEntry.TABLE_NAME, null, cv);
+        cv.put(PlaylistItemsContract.PlaylistItemsEntry.PLAYLIST_ID, playlist.getId());
+        cv.put(PlaylistItemsContract.PlaylistItemsEntry.SONG_ID, song.getId());
+        db.insert(PlaylistItemsContract.PlaylistItemsEntry.TABLE_NAME, null, cv);
     }
 
     private void addSongToDB(SongModel songFromDisk) {

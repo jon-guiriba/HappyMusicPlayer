@@ -5,10 +5,10 @@ import android.provider.BaseColumns;
 /**
  * Created by Jon on 8/27/2016.
  */
-public final class PlayListItemsContract {
-    private PlayListItemsContract() {}
+public final class PlaylistItemsContract {
+    private PlaylistItemsContract() {}
 
-    public static class PlayListItemsEntry implements BaseColumns {
+    public static class PlaylistItemsEntry implements BaseColumns {
         public static final String TABLE_NAME = "playlist_items";
 
         public static final String ID = "id";

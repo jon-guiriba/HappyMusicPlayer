@@ -1,4 +1,4 @@
-package jon.happymusicplayer.com.happymusicplayer.data.managers;
+package jon.happymusicplayer.com.happymusicplayer.data;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -10,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import jon.happymusicplayer.com.happymusicplayer.R;
-import jon.happymusicplayer.com.happymusicplayer.data.contracts.PlayListItemsContract;
+import jon.happymusicplayer.com.happymusicplayer.data.contracts.PlaylistItemsContract;
 import jon.happymusicplayer.com.happymusicplayer.data.models.PlayListModel;
 import jon.happymusicplayer.com.happymusicplayer.data.contracts.PlaylistsContract;
 import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
@@ -41,7 +41,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SongsContract.SongsEntry.SQL_CREATE);
         db.execSQL(PlaylistsContract.PlaylistsEntry.SQL_CREATE);
-        db.execSQL(PlayListItemsContract.PlayListItemsEntry.SQL_CREATE);
+        db.execSQL(PlaylistItemsContract.PlaylistItemsEntry.SQL_CREATE);
 
         ContentValues cv = new ContentValues();
         cv.put(PlaylistsContract.PlaylistsEntry.NAME, context.getResources().getString(R.string.all_songs));
@@ -54,13 +54,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(PlayListItemsContract.PlayListItemsEntry.SQL_DROP);
+        db.execSQL(PlaylistItemsContract.PlaylistItemsEntry.SQL_DROP);
         db.execSQL(PlaylistsContract.PlaylistsEntry.SQL_DROP);
         db.execSQL(SongsContract.SongsEntry.SQL_DROP);
 
         db.execSQL(SongsContract.SongsEntry.SQL_CREATE);
         db.execSQL(PlaylistsContract.PlaylistsEntry.SQL_CREATE);
-        db.execSQL(PlayListItemsContract.PlayListItemsEntry.SQL_CREATE);
+        db.execSQL(PlaylistItemsContract.PlaylistItemsEntry.SQL_CREATE);
 
         ContentValues cv = new ContentValues();
         cv.put(PlaylistsContract.PlaylistsEntry.NAME, "All Songs");
@@ -98,6 +98,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<PlayListModel> getAllPlayLists() {
         SQLiteDatabase db = DatabaseHelper.getInstance(context).getReadableDatabase();
         Cursor cursor = db.query(PlaylistsContract.PlaylistsEntry.TABLE_NAME, PlaylistsContract.PlaylistsEntry.ALL, null, null, null, null, null);
+
+        List<PlayListModel> playListsList = new LinkedList<>();
+
+        try {
+            while (cursor.moveToNext()) {
+
+                int id = cursor.getInt(cursor.getColumnIndex(PlaylistsContract.PlaylistsEntry.ID));
+                String name = cursor.getString(cursor.getColumnIndex(PlaylistsContract.PlaylistsEntry.NAME));
+
+                playListsList.add(new PlayListModel(id, name));
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return playListsList;
+    }
+
+    public List<PlayListModel> getAllUserPlayLists() {
+        SQLiteDatabase db = DatabaseHelper.getInstance(context).getReadableDatabase();
+        Cursor cursor = db.query(
+                PlaylistsContract.PlaylistsEntry.TABLE_NAME,
+                PlaylistsContract.PlaylistsEntry.ALL,
+                "id!=1 AND id!=2",
+                null,
+                null,
+                null,
+                null);
 
         List<PlayListModel> playListsList = new LinkedList<>();
 

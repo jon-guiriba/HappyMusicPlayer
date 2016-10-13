@@ -1,13 +1,13 @@
 package jon.happymusicplayer.com.happymusicplayer.data.daos;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import jon.happymusicplayer.com.happymusicplayer.data.managers.DatabaseHelper;
+import jon.happymusicplayer.com.happymusicplayer.data.DatabaseHelper;
 import jon.happymusicplayer.com.happymusicplayer.data.models.PlayListModel;
 import jon.happymusicplayer.com.happymusicplayer.data.contracts.PlaylistsContract;
-import jon.happymusicplayer.com.happymusicplayer.data.contracts.SongsContract;
 
 /**
  * Created by Jon on 8/29/2016.
@@ -39,8 +39,8 @@ public class PlayListsDao {
 
         try {
             while (cursor.moveToNext()) {
-                int plId = cursor.getInt(cursor.getColumnIndex(SongsContract.SongsEntry.ID));
-                String plName = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.NAME));
+                int plId = cursor.getInt(cursor.getColumnIndex(PlaylistsContract.PlaylistsEntry.ID));
+                String plName = cursor.getString(cursor.getColumnIndex(PlaylistsContract.PlaylistsEntry.NAME));
 
                 playList = new PlayListModel(plId, plName);
             }
@@ -49,5 +49,11 @@ public class PlayListsDao {
         }
 
         return playList;
+    }
+
+    public void addNewPlaylist(String playlistName){
+        ContentValues cv = new ContentValues();
+        cv.put(PlaylistsContract.PlaylistsEntry.NAME, playlistName);
+        db.insert(PlaylistsContract.PlaylistsEntry.TABLE_NAME, null, cv);
     }
 }

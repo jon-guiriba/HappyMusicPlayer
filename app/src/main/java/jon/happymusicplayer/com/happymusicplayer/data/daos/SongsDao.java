@@ -3,7 +3,6 @@ package jon.happymusicplayer.com.happymusicplayer.data.daos;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -13,7 +12,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import jon.happymusicplayer.com.happymusicplayer.data.managers.DatabaseHelper;
+import jon.happymusicplayer.com.happymusicplayer.data.DatabaseHelper;
 import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 import jon.happymusicplayer.com.happymusicplayer.data.contracts.SongsContract;
 import jon.happymusicplayer.com.happymusicplayer.utils.Utilities;
