@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/popup_add_to_playlist_item"
+    android:id="@+id/popupAddToPlaylistItem"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
     android:paddingTop="10dp"

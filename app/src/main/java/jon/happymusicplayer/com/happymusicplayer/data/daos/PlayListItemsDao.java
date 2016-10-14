@@ -5,7 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import jon.happymusicplayer.com.happymusicplayer.data.DatabaseHelper;
@@ -38,7 +38,7 @@ public class PlaylistItemsDao {
 
         if (cursor == null) return null;
 
-        List<PlayListItemModel> playListItems = new LinkedList<>();
+        List<PlayListItemModel> playListItems = new ArrayList<>();
 
         try {
             while (cursor.moveToNext()) {
@@ -56,6 +56,20 @@ public class PlaylistItemsDao {
     }
 
     public void addNewPlaylistItem(int playlistId, int songId) {
+
+        Cursor cursor = db.query(
+                PlaylistItemsContract.PlaylistItemsEntry.TABLE_NAME,
+                PlaylistItemsContract.PlaylistItemsEntry.ALL,
+                PlaylistItemsContract.PlaylistItemsEntry.SONG_ID + "=? AND " +
+                        PlaylistItemsContract.PlaylistItemsEntry.PLAYLIST_ID + "=?",
+                new String[]{"" + playlistId, "" + songId},
+                null,
+                null,
+                null
+        );
+
+        if(cursor != null) return;
+
         ContentValues cv = new ContentValues();
         cv.put(PlaylistItemsContract.PlaylistItemsEntry.SONG_ID, songId);
         cv.put(PlaylistItemsContract.PlaylistItemsEntry.PLAYLIST_ID, playlistId);

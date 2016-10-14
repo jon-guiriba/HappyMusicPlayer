@@ -24,6 +24,7 @@ import java.util.List;
 
 import jon.happymusicplayer.com.happymusicplayer.R;
 import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
+import jon.happymusicplayer.com.happymusicplayer.tasks.UpdateProgressBarTask;
 
 /**
  * Created by Jon on 10/13/2016.
@@ -47,14 +48,16 @@ public class Presenter {
     private EditText etAddNewPlaylist;
     private SearchView searchView;
     private SeekBar sbSongProgressBar;
-    private Handler songProgressBarHandler = new Handler();
     private ListPopupWindow songOptions;
     private boolean isPlayerPrepared = false;
     private int trackProgress = 0;
     private PopupWindow addToPlaylistPopupWindow;
     private PopupWindow createNewPlaylistPopupWindow;
+    private Handler songProgressBarHandler = new Handler();
+
 
     private Runnable trackBarUpdateTask;
+    private ArrayAdapter<SongModel> currentPlaylistAdapter;
 
     public Presenter(Context context) {
         this.context = context;
@@ -76,15 +79,6 @@ public class Presenter {
         lvCurrentPlaylist.setTextFilterEnabled(false);
 
         setupSongContextOptionsPopupWindow();
-
-        trackBarUpdateTask = new Runnable() {
-            @Override
-            public void run() {
-                if (isPlayerPrepared) return;
-                sbSongProgressBar.setProgress(trackProgress);
-                songProgressBarHandler.postDelayed(trackBarUpdateTask, SONG_PROGRESS_BAR_REFRESH_RATE);
-            }
-        };
     }
 
     private void setupSongContextOptionsPopupWindow() {
@@ -142,8 +136,8 @@ public class Presenter {
     }
 
     public void updatePlaylist(List<SongModel> playlist) {
-        ArrayAdapter<SongModel> adapter = new ArrayAdapter<>(context, R.layout.current_playlist_item, playlist);
-        lvCurrentPlaylist.setAdapter(adapter);
+        currentPlaylistAdapter = new ArrayAdapter<>(context, R.layout.current_playlist_item, playlist);
+        lvCurrentPlaylist.setAdapter(currentPlaylistAdapter);
     }
 
     public void updateDrawerPlaylist(List<String> drawerPlaylists) {
@@ -168,9 +162,9 @@ public class Presenter {
 
     public void updateShuffleButton(boolean isShuffle) {
         if (isShuffle) {
-            btnShuffle.setImageResource(R.drawable.img_btn_shuffle_disabled);
-        } else {
             btnShuffle.setImageResource(R.drawable.img_btn_shuffle);
+        } else {
+            btnShuffle.setImageResource(R.drawable.img_btn_shuffle_disabled);
         }
     }
 
@@ -182,9 +176,12 @@ public class Presenter {
         }
     }
 
-    public void startUpdateProgressBar(boolean isPlayerPrepared, int trackProgress) {
-        this.isPlayerPrepared = isPlayerPrepared;
-        this.trackProgress = trackProgress;
+    public void startUpdateProgressBar() {
+        songProgressBarHandler.postDelayed(trackBarUpdateTask, SONG_PROGRESS_BAR_REFRESH_RATE);
+    }
+
+    public void updateProgressBar(int trackProgress) {
+        sbSongProgressBar.setProgress(trackProgress);
         songProgressBarHandler.postDelayed(trackBarUpdateTask, SONG_PROGRESS_BAR_REFRESH_RATE);
     }
 
@@ -217,6 +214,7 @@ public class Presenter {
     public void hideCreateNewPlaylistPopupWindow() {
         createNewPlaylistPopupWindow.dismiss();
     }
+
     public void hideAddPlaylistPopupWindow() {
         addToPlaylistPopupWindow.dismiss();
     }
@@ -235,5 +233,9 @@ public class Presenter {
 
     public Button getSubmitAddNewPlaylistButton() {
         return btnSubmitAddNewPlaylist;
+    }
+
+    public void setTrackBarUpdateTask(Runnable trackBarUpdateTask) {
+        this.trackBarUpdateTask = trackBarUpdateTask;
     }
 }

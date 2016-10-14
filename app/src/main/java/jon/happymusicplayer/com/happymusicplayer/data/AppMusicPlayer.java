@@ -9,11 +9,11 @@ import android.media.MediaPlayer;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import jon.happymusicplayer.com.happymusicplayer.R;
-import jon.happymusicplayer.com.happymusicplayer.data.daos.PlayListsDao;
+import jon.happymusicplayer.com.happymusicplayer.data.daos.PlaylistsDao;
 import jon.happymusicplayer.com.happymusicplayer.data.daos.SongsDao;
 import jon.happymusicplayer.com.happymusicplayer.data.managers.SettingsManager;
 import jon.happymusicplayer.com.happymusicplayer.data.models.PlayListModel;
@@ -30,46 +30,41 @@ public class AppMusicPlayer extends MediaPlayer {
     public static final String REPEAT_ALL = "repeat_all";
 
     private Context context;
-    private List<SongModel> playList;
+    private List<SongModel> playlist;
     private SongModel song;
     private boolean isPrepared;
     private boolean isShuffle;
     private int playListIndex;
     private String repeatState;
     private int prevPlayListIndex;
-    private boolean isPlaying;
+    private String playlistName;
+
+
     private final BroadcastReceiver headsetReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.i("onRecieve", "Wassap");
             if (intent.getAction().equals(android.media.AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
                 pause();
             }
         }
     };
+    private Presenter presenter;
+
 
     public AppMusicPlayer(Context context) {
         this.context = context;
-        setOnPreparedListener(new OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                start();
-                isPrepared = true;
-            }
-        });
     }
 
 
     public void playSong(int index) {
         playListIndex = index;
-        song = playList.get(index);
-        isPlaying = false;
+        song = playlist.get(index);
         context.registerReceiver(headsetReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
 
         try {
             reset();
+            isPrepared = false;
             setDataSource(song.getPath());
-            isPlaying = true;
             prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
@@ -77,17 +72,48 @@ public class AppMusicPlayer extends MediaPlayer {
 
     }
 
-    public void setPlayList(String playListName) {
-        PlayListsDao playListsDao = new PlayListsDao(this.context);
+    public void playSong(String path) {
+        int index = getPathIndex(path);
+
+        playListIndex = index;
+        song = playlist.get(index);
+        context.registerReceiver(headsetReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
+
+        try {
+            reset();
+            isPrepared = false;
+            setDataSource(song.getPath());
+            prepareAsync();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private int getPathIndex(String path) {
+        for (int i = 0; i < playlist.size(); i++) {
+            if (playlist.get(i).getPath().equals(path))
+                return i;
+        }
+        return -1;
+    }
+
+    public void setPlaylist(String playListName) {
+        this.playlistName = playListName;
+        PlaylistsDao playlistsDao = new PlaylistsDao(this.context);
         SongsDao songsDao = new SongsDao(this.context);
 
         if (playListName.equals(context.getResources().getString(R.string.recently_added))) {
-            playList = songsDao.getAllRecentlyAdded();
+            playlist = songsDao.getAllRecentlyAdded();
             return;
         }
 
-        int playListId = playListsDao.getSingleByName(playListName).getId();
-        playList = songsDao.getAllByPlayList(playListId);
+        int playListId = playlistsDao.getSingleByName(playListName).getId();
+        playlist = songsDao.getAllByPlayList(playListId);
+    }
+
+    public void setPlaylist(List<SongModel> playlist) {
+        this.playlist = playlist;
     }
 
     public void play() {
@@ -99,8 +125,8 @@ public class AppMusicPlayer extends MediaPlayer {
     public void playNextSong() {
         prevPlayListIndex = playListIndex;
         if (isShuffle) {
-            playSong(Utilities.getRandomInt(playList.size(), 0));
-        } else if (playListIndex == playList.size() - 1) {
+            playSong(Utilities.getRandomInt(playlist.size(), 0));
+        } else if (playListIndex == playlist.size() - 1) {
             playSong(0);
         } else {
             playSong(playListIndex + 1);
@@ -113,7 +139,7 @@ public class AppMusicPlayer extends MediaPlayer {
             playSong(prevPlayListIndex);
             prevPlayListIndex = -1;
         } else if (playListIndex == 0)
-            playSong(playList.size() - 1);
+            playSong(playlist.size() - 1);
         else
             playSong(playListIndex - 1);
     }
@@ -145,11 +171,9 @@ public class AppMusicPlayer extends MediaPlayer {
     }
 
     public void togglePlayState() {
-        if (isPlaying) {
-            isPlaying = false;
+        if (isPlaying()) {
             pause();
         } else {
-            isPlaying = true;
             play();
         }
     }
@@ -185,13 +209,14 @@ public class AppMusicPlayer extends MediaPlayer {
         return repeatState;
     }
 
-    public List<SongModel> getPlayList() {
-        return this.playList;
+    public List<SongModel> getPlaylist() {
+        return this.playlist;
     }
 
     public List<String> getAllPlayLists() {
-        List<PlayListModel> playLists = DatabaseHelper.getInstance(context).getAllPlayLists();
-        List<String> playListNames = new LinkedList<>();
+        PlaylistsDao playlistsDao = new PlaylistsDao(context);
+        List<PlayListModel> playLists = playlistsDao.getAllPlayLists();
+        List<String> playListNames = new ArrayList<>();
 
         for (PlayListModel playList : playLists) {
             playListNames.add(playList.getName());
@@ -200,9 +225,10 @@ public class AppMusicPlayer extends MediaPlayer {
         return playListNames;
     }
 
-    public List<String> getAllUserPlayLists() {
-        List<PlayListModel> playLists = DatabaseHelper.getInstance(context).getAllUserPlayLists();
-        List<String> playListNames = new LinkedList<>();
+    public List<String> getAllUserPlaylists() {
+        PlaylistsDao playlistsDao = new PlaylistsDao(context);
+        List<PlayListModel> playLists = playlistsDao.getAllUserPlayLists();
+        List<String> playListNames = new ArrayList<>();
 
         for (PlayListModel playList : playLists) {
             playListNames.add(playList.getName());
@@ -215,17 +241,24 @@ public class AppMusicPlayer extends MediaPlayer {
         return song;
     }
 
-    @Override
-    public boolean isPlaying() {
-        return isPlaying;
+    public String getPlaylistName() {
+        return this.playlistName;
     }
 
     public boolean isPrepared() {
         return isPrepared;
     }
 
+    public void setIsPrepared(boolean isPrepared) {
+        this.isPrepared = isPrepared;
+    }
+
 
     public void setRepeatState(String repeatState) {
         this.repeatState = repeatState;
+    }
+
+    public void setPresenter(Presenter presenter) {
+        this.presenter = presenter;
     }
 }

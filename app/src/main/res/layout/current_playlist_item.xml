@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/current_playlist_item"
+    android:id="@+id/currentPlaylistItem"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
     android:paddingTop="5dp"
@@ -9,4 +9,6 @@
     android:layout_height="wrap_content"
     android:ellipsize="end"
     android:maxLines="1"
-    android:textSize="17dp"/>
+    android:textSize="17sp"
+    android:background="@drawable/current_playlist_item_bg"
+    />

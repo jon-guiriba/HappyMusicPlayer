@@ -12,7 +12,7 @@ import java.util.Map.Entry;
 import jon.happymusicplayer.com.happymusicplayer.R;
 import jon.happymusicplayer.com.happymusicplayer.adapters.OnTaskCompleted;
 import jon.happymusicplayer.com.happymusicplayer.data.DatabaseHelper;
-import jon.happymusicplayer.com.happymusicplayer.data.daos.PlayListsDao;
+import jon.happymusicplayer.com.happymusicplayer.data.daos.PlaylistsDao;
 import jon.happymusicplayer.com.happymusicplayer.data.daos.SongsDao;
 import jon.happymusicplayer.com.happymusicplayer.data.contracts.PlaylistItemsContract;
 import jon.happymusicplayer.com.happymusicplayer.data.managers.MusicFilesManager;
@@ -45,7 +45,7 @@ public class UpdateAllSongsPlayListTask extends AsyncTask<Object, Void, Void> {
         HashMap<String, SongModel> songsFromDisk = mfManager.getAllAudioFilesFromDisk();
 
         SongsDao songsDao = new SongsDao(context);
-        PlayListsDao playListsDao = new PlayListsDao(context);
+        PlaylistsDao playlistsDao = new PlaylistsDao(context);
 
         String allSongsPlayList = context.getResources().getString(R.string.all_songs);
 
@@ -59,7 +59,7 @@ public class UpdateAllSongsPlayListTask extends AsyncTask<Object, Void, Void> {
                 song = songsDao.getSingleByPath(path);
             }
 
-            PlayListModel playList = playListsDao.getSingleByName(allSongsPlayList);
+            PlayListModel playList = playlistsDao.getSingleByName(allSongsPlayList);
 
             boolean isSongAlreadyExists = songsDao.getSingleByPathAndPlayList(song.getPath(), playList.getId()) != null;
 

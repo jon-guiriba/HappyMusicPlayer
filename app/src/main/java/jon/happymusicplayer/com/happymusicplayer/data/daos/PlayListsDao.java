@@ -5,6 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jon.happymusicplayer.com.happymusicplayer.data.DatabaseHelper;
 import jon.happymusicplayer.com.happymusicplayer.data.models.PlayListModel;
 import jon.happymusicplayer.com.happymusicplayer.data.contracts.PlaylistsContract;
@@ -12,12 +15,12 @@ import jon.happymusicplayer.com.happymusicplayer.data.contracts.PlaylistsContrac
 /**
  * Created by Jon on 8/29/2016.
  */
-public class PlayListsDao {
+public class PlaylistsDao {
 
 
     private final SQLiteDatabase db;
 
-    public PlayListsDao(Context context) {
+    public PlaylistsDao(Context context) {
         this.db = DatabaseHelper.getInstance(context).getReadableDatabase();
     }
 
@@ -51,7 +54,62 @@ public class PlayListsDao {
         return playList;
     }
 
-    public void addNewPlaylist(String playlistName){
+    public List<PlayListModel> getAllUserPlayLists() {
+        Cursor cursor = db.query(
+                PlaylistsContract.PlaylistsEntry.TABLE_NAME,
+                PlaylistsContract.PlaylistsEntry.ALL,
+                PlaylistsContract.PlaylistsEntry.ID + "!=1 AND " +
+                        PlaylistsContract.PlaylistsEntry.ID + " !=2",
+                null,
+                null,
+                null,
+                PlaylistsContract.PlaylistsEntry.NAME
+        );
+
+        List<PlayListModel> playListsList = new ArrayList<>();
+
+        try {
+            while (cursor.moveToNext()) {
+                int id = cursor.getInt(cursor.getColumnIndex(PlaylistsContract.PlaylistsEntry.ID));
+                String name = cursor.getString(cursor.getColumnIndex(PlaylistsContract.PlaylistsEntry.NAME));
+
+                playListsList.add(new PlayListModel(id, name));
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return playListsList;
+    }
+
+    public List<PlayListModel> getAllPlayLists() {
+        Cursor cursor = db.query(
+                PlaylistsContract.PlaylistsEntry.TABLE_NAME,
+                PlaylistsContract.PlaylistsEntry.ALL,
+                null,
+                null,
+                null,
+                null,
+                PlaylistsContract.PlaylistsEntry.NAME
+        );
+
+        List<PlayListModel> playListsList = new ArrayList<>();
+
+        try {
+            while (cursor.moveToNext()) {
+                int id = cursor.getInt(cursor.getColumnIndex(PlaylistsContract.PlaylistsEntry.ID));
+                String name = cursor.getString(cursor.getColumnIndex(PlaylistsContract.PlaylistsEntry.NAME));
+
+                playListsList.add(new PlayListModel(id, name));
+            }
+        } finally {
+            cursor.close();
+        }
+
+        return playListsList;
+    }
+
+    public void addNewPlaylist(String playlistName) {
         ContentValues cv = new ContentValues();
         cv.put(PlaylistsContract.PlaylistsEntry.NAME, playlistName);
         db.insert(PlaylistsContract.PlaylistsEntry.TABLE_NAME, null, cv);

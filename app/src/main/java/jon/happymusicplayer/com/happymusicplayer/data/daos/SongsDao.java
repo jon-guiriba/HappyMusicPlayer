@@ -7,9 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 import jon.happymusicplayer.com.happymusicplayer.data.DatabaseHelper;
@@ -89,7 +90,7 @@ public class SongsDao {
     public List<SongModel> getAll() {
         Cursor cursor = db.query(SongsContract.SongsEntry.TABLE_NAME, SongsContract.SongsEntry.ALL, null, null, null, null, SongsContract.SongsEntry.NAME);
 
-        List<SongModel> allSongsList = new LinkedList<>();
+        List<SongModel> allSongsList = new ArrayList<>();
         try {
             while (cursor.moveToNext()) {
 
@@ -109,16 +110,17 @@ public class SongsDao {
     }
 
     public List<SongModel> getAllByPlayList(int playListId) {
-        String query = "SELECT  s.*" +
-                "       FROM    playlist_items pi" +
-                "               INNER JOIN playlists p ON p.id = pi.playlist_id" +
-                "               INNER JOIN songs s ON s.id = pi.song_id" +
-                "       WHERE   p.id = ?";
+        String query = "SELECT      s.*" +
+                "       FROM        playlist_items pi" +
+                "                   INNER JOIN playlists p ON p.id = pi.playlist_id" +
+                "                   INNER JOIN songs s ON s.id = pi.song_id" +
+                "       WHERE       p.id = ?" +
+                "       ORDER BY    s.name ";
 
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(playListId)});
         if (cursor == null) return null;
 
-        List<SongModel> songsList = new LinkedList<>();
+        List<SongModel> songsList = new ArrayList<>();
 
         try {
             while (cursor.moveToNext()) {
@@ -149,7 +151,7 @@ public class SongsDao {
         Cursor cursor = db.rawQuery(query, null);
         if (cursor == null) return null;
 
-        List<SongModel> songsList = new LinkedList<>();
+        List<SongModel> songsList = new ArrayList<>();
 
         try {
             while (cursor.moveToNext()) {
@@ -172,5 +174,7 @@ public class SongsDao {
 
         return songsList;
     }
+
+
 
 }

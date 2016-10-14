@@ -1,11 +1,13 @@
 package jon.happymusicplayer.com.happymusicplayer;
 
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.SearchView;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -17,34 +19,36 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jon.happymusicplayer.com.happymusicplayer.data.AppMusicPlayer;
 import jon.happymusicplayer.com.happymusicplayer.adapters.OnTaskCompleted;
 import jon.happymusicplayer.com.happymusicplayer.data.Presenter;
 import jon.happymusicplayer.com.happymusicplayer.data.daos.PlaylistItemsDao;
-import jon.happymusicplayer.com.happymusicplayer.data.daos.PlayListsDao;
+import jon.happymusicplayer.com.happymusicplayer.data.daos.PlaylistsDao;
 import jon.happymusicplayer.com.happymusicplayer.data.daos.SongsDao;
 import jon.happymusicplayer.com.happymusicplayer.data.managers.SettingsManager;
 import jon.happymusicplayer.com.happymusicplayer.data.models.PlayListModel;
 import jon.happymusicplayer.com.happymusicplayer.eventhandlers.OnMediaPlayerCompletionListener;
 import jon.happymusicplayer.com.happymusicplayer.tasks.UpdateAllSongsPlayListTask;
 import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
+import jon.happymusicplayer.com.happymusicplayer.tasks.UpdateProgressBarTask;
 import jon.happymusicplayer.com.happymusicplayer.utils.Utilities;
 
 
 public class MainActivity extends AppCompatActivity implements OnClickListener,
         AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener,
-        SeekBar.OnSeekBarChangeListener, OnTaskCompleted, SearchView.OnQueryTextListener {
+        SeekBar.OnSeekBarChangeListener, OnTaskCompleted, SearchView.OnQueryTextListener, MediaPlayer.OnPreparedListener {
     private Presenter presenter;
 
     private List<SongModel> playList;
     private SongModel selectedSong;
     AppMusicPlayer player;
+    private Handler songProgressBarHandler = new Handler();
 
 
     @Override
@@ -55,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
 
         player = new AppMusicPlayer(this);
         presenter = new Presenter(this);
-
+        player.setPresenter(presenter);
         init();
 
         new UpdateAllSongsPlayListTask(this, this).execute();
@@ -95,12 +99,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
         loadPreferences();
         loadDisplay();
         SettingsManager.setContext(this);
+        presenter.setTrackBarUpdateTask(new UpdateProgressBarTask(player, presenter));
+
     }
 
     private void loadDisplay() {
-        presenter.updatePlaylist(player.getPlayList());
+        presenter.updatePlaylist(player.getPlaylist());
         presenter.updateDrawerPlaylist(player.getAllPlayLists());
-        presenter.updatePlaylist(player.getPlayList());
         presenter.updateRepeatButton(player.getRepeatState());
         presenter.updateShuffleButton(player.getIsShuffle());
     }
@@ -121,12 +126,13 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
         OnMediaPlayerCompletionListener onMediaPlayerCompletionListener =
                 new OnMediaPlayerCompletionListener(player, presenter);
         player.setOnCompletionListener(onMediaPlayerCompletionListener);
+        player.setOnPreparedListener(this);
     }
 
     private void loadPreferences() {
         SharedPreferences defPreference = PreferenceManager.getDefaultSharedPreferences(this);
         String playListName = defPreference.getString(getResources().getString(R.string.last_playlist), getResources().getString(R.string.all_songs));
-        player.setPlayList(playListName);
+        player.setPlaylist(playListName);
         player.setRepeatState(defPreference.getString(getResources().getString(R.string.repeat_state), AppMusicPlayer.REPEAT_OFF));
         player.setIsShuffle(defPreference.getBoolean(getResources().getString(R.string.is_shuffle), false));
     }
@@ -142,18 +148,12 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
 
         switch (v.getId()) {
-            case R.id.current_playlist_item:
-                player.playSong(position);
-                presenter.updateCurrentSongText(player.getSong().getName());
-                presenter.resetProgressBar();
-
-                presenter.updatePlayButton(player.isPlaying());
-
-                int trackProgress = Utilities.getPercentage(player.getCurrentPosition(), player.getDuration());
-                presenter.startUpdateProgressBar(player.isPrepared(), trackProgress);
+            case R.id.currentPlaylistItem:
+                SongModel song = (SongModel) parent.getItemAtPosition(position);
+                player.playSong(song.getPath());
                 break;
 
-            case R.id.drawer_item_play_list:
+            case R.id.drawerPlaylistItem:
                 String playListName = (String) parent.getItemAtPosition(position);
 
                 if (playListName.equals(getResources().getString(R.string.add_new))) {
@@ -163,20 +163,20 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
                     break;
                 }
 
-                player.setPlayList(playListName);
-                presenter.updatePlaylist(player.getPlayList());
+                player.setPlaylist(playListName);
+                presenter.updatePlaylist(player.getPlaylist());
                 break;
 
-            case R.id.context_menu_item:
-                presenter.setupAddToPlaylistPopupWindow(player.getAllUserPlayLists());
+            case R.id.contextMenuItem:
+                presenter.setupAddToPlaylistPopupWindow(player.getAllUserPlaylists());
                 presenter.getAddToPlaylistCurrentPlayListsListView().setOnItemClickListener(this);
                 presenter.showAddToPlaylistPopupWindow();
                 presenter.hideSongOptions();
                 break;
 
-            case R.id.popup_add_to_playlist_item:
+            case R.id.popupAddToPlaylistItem:
                 playListName = (String) parent.getItemAtPosition(position);
-                PlayListsDao plDao = new PlayListsDao(this);
+                PlaylistsDao plDao = new PlaylistsDao(this);
                 PlayListModel playlist = plDao.getSingleByName(playListName);
 
                 PlaylistItemsDao plItemsDao = new PlaylistItemsDao(this);
@@ -193,6 +193,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
             case R.id.btnPlay:
                 player.togglePlayState();
                 presenter.updatePlayButton(player.isPlaying());
+                toggleTrackBarUpdate();
                 break;
 
             case R.id.btnBackward:
@@ -221,11 +222,19 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
                 break;
 
             case R.id.btnSubmitAddNewPlaylist:
-                PlayListsDao plDao = new PlayListsDao(this);
+                PlaylistsDao plDao = new PlaylistsDao(this);
                 plDao.addNewPlaylist(presenter.getAddNewPlaylistText());
                 presenter.updateDrawerPlaylist(player.getAllPlayLists());
                 presenter.hideCreateNewPlaylistPopupWindow();
                 break;
+        }
+    }
+
+    private void toggleTrackBarUpdate() {
+        if (player.isPlaying()) {
+            presenter.startUpdateProgressBar();
+        } else {
+            presenter.stopUpdateProgressBar();
         }
     }
 
@@ -258,9 +267,7 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
 
         int currentPosition = Utilities.getProgressToTimer(seekBar.getProgress(), player.getDuration());
         player.seekTo(currentPosition);
-
-        int trackProgress = Utilities.getPercentage(player.getCurrentPosition(), player.getDuration());
-        presenter.startUpdateProgressBar(player.isPlaying(), trackProgress);
+        presenter.startUpdateProgressBar();
     }
 
     @Override
@@ -309,9 +316,41 @@ public class MainActivity extends AppCompatActivity implements OnClickListener,
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        ArrayAdapter<SongModel> lvCurrentPlaylistAdapter =
-                (ArrayAdapter<SongModel>) presenter.getCurrentPlaylistListView().getAdapter();
-        lvCurrentPlaylistAdapter.getFilter().filter(newText);
+        SongsDao songsDao = new SongsDao(this);
+        PlaylistsDao playlistsDao = new PlaylistsDao(this);
+        PlayListModel playlistEntity = playlistsDao.getSingleByName(player.getPlaylistName());
+        List<SongModel> playlist = songsDao.getAllByPlayList(playlistEntity.getId());
+        List<SongModel> newPlaylist = new ArrayList<>();
+
+        for (int i = 0; i < playlist.size(); i++) {
+            SongModel song = playlist.get(i);
+            if (song.getName().toLowerCase().contains(newText))
+                newPlaylist.add(song);
+        }
+
+        player.setPlaylist(newPlaylist);
+        presenter.updatePlaylist(newPlaylist);
         return true;
+    }
+
+    private List<SongModel> getAdapterContents(ArrayAdapter<SongModel> adapter) {
+        List<SongModel> playlist = new ArrayList<>();
+
+        for (int i = 0; i < adapter.getCount(); i++) {
+            playlist.add(adapter.getItem(i));
+        }
+
+        return playlist;
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        player.setIsPrepared(true);
+        player.play();
+
+        presenter.updateCurrentSongText(player.getSong().getName());
+        presenter.resetProgressBar();
+        presenter.updatePlayButton(player.isPlaying());
+        presenter.startUpdateProgressBar();
     }
 }

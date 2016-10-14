@@ -1,6 +1,7 @@
 package jon.happymusicplayer.com.happymusicplayer.eventhandlers;
 
 import android.media.MediaPlayer;
+import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -23,6 +24,7 @@ public class OnMediaPlayerCompletionListener implements MediaPlayer.OnCompletion
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        Log.i("HandlerEvent","onMediaplyerCompletionListener");
         presenter.resetProgressBar();
 
         switch (appMusicPlayer.getRepeatState()) {

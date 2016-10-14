@@ -3,11 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_equalizer"
-        android:title="Equalizer"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/action_search"
         android:background="@android:drawable/dialog_holo_light_frame"
         android:iconifiedByDefault="false"
