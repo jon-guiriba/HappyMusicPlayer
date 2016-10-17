@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">HappyMusicPlayer</string>
-    <string name="sdcard_path">HappyMusicPlayer</string>
+    <string name="app_name" >HappyMusicPlayer</string>
+    <string name="sdcard_path" >HappyMusicPlayer</string>
     <string name="all_songs">All Songs</string>
     <string name="recently_added">Recently Added</string>
     <string name="repeat_state">repeatState</string>
@@ -11,14 +11,4 @@
     <string name="add_new">Add New+</string>
     <string name="add_new_playlist">Add new playlist</string>
     <string name="search">Search</string>
-
-    <string-array name="context_options">
-        <item>Add To Playlist</item>
-    </string-array>
-
-    <string-array name="test_array">
-        <item>Test1</item>
-        <item>Test2</item>
-        <item>Test3</item>
-    </string-array>
 </resources>

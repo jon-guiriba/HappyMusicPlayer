@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="@style/Theme.AppCompat.Light">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/friendlyYellow</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+    <style title="AppTheme" parent="@style/Theme.AppCompat.Light">
+        <item title="colorPrimary">@color/colorPrimary</item>
+        <item title="colorPrimaryDark">@color/friendlyYellow</item>
+        <item title="colorAccent">@color/colorAccent</item>
+        <item title="android:statusBarColor">@color/colorPrimaryDark</item>
     </style>
 </resources>

@@ -3,7 +3,29 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:focusable="true"
-    android:layout_gravity="fill_horizontal"
+    android:layout_gravity="center"
     >
+    
+    <SearchView
+        android:id="@+id/action_search"
+        android:layout_width="150dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:iconifiedByDefault="false"
+        android:queryHint="@string/search"
+        >
+
+    </SearchView>
+
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/img_sort"
+        android:layout_toEndOf="@id/action_search"
+        android:background="@color/colorPrimary"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:scaleType="fitCenter"
+        />
 
 </RelativeLayout>

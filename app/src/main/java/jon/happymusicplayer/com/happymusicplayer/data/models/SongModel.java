@@ -9,45 +9,54 @@ public class SongModel {
 
 
     private int id;
-    private String name;
+    private String title;
+    private String artist;
+    private String album;
+    private int duration;
     private String path;
     private Date dateModified;
 
-    public SongModel(int id, String name, String path) {
+    public SongModel(int id, String title, String artist, String album, int duration, Date dateModified, String path) {
         this.id = id;
-        this.name = name;
+        this.title = title;
+        this.artist = artist;
+        this.album = album;
+        this.duration = duration;
+        this.dateModified = dateModified;
         this.path = path;
     }
 
-    public SongModel(int id, String name, String path, Date dateModified) {
-        this.id = id;
-        this.name = name;
-        this.path = path;
-        this.dateModified = dateModified;
+    public String getAlbum() {
+        return album;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public Date getDateModified() {
+        return dateModified;
+    }
+
+    public int getDuration() {
+        return duration;
     }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public String getPath() {
         return path;
     }
 
-    public String toString() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public Date getDateModified() {
-        return dateModified;
+
+    public String toString() {
+        return title;
     }
 
 }

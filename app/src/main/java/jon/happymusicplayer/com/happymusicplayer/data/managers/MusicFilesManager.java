@@ -4,9 +4,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 
-import java.util.Date;
 import java.util.HashMap;
 
+import jon.happymusicplayer.com.happymusicplayer.data.daos.SongsDao;
 import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 
 
@@ -19,35 +19,42 @@ public class MusicFilesManager {
         this.context = context;
     }
 
-    public HashMap<String, SongModel> getAllAudioFilesFromDisk() {
+    public void saveAllAudioFilesToDB() {
         final Cursor songsCursor = context.getContentResolver().query(
                 MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                new String[]{MediaStore.Audio.Media.DISPLAY_NAME, MediaStore.Audio.Media.DATA},
+                new String[]{
+                        MediaStore.Audio.Media.DISPLAY_NAME,
+                        MediaStore.Audio.Media.ARTIST,
+                        MediaStore.Audio.Media.ALBUM,
+                        MediaStore.Audio.Media.DURATION,
+                        MediaStore.Audio.Media.DATA,
+                        MediaStore.Audio.Media.IS_MUSIC,
+                },
                 null,
                 null,
                 "LOWER(" + MediaStore.Audio.Media.TITLE + ") ASC");
 
-        if (songsCursor == null) return null;
+        if (songsCursor == null) return;
 
-        HashMap<String, SongModel> fileModels = new HashMap<String, SongModel>();
+        SongsDao songsDao = new SongsDao(context);
 
-        int i = 0;
         if (songsCursor.moveToFirst()) {
             do {
-                String fileName = songsCursor.getString(songsCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME));
-                String filePath = songsCursor.getString(songsCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+                boolean isMusic = songsCursor.getInt(songsCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.IS_MUSIC)) != 0;
 
-                if (isMusicFile(filePath)) {
-                    SongModel file = new SongModel(0, fileName, filePath);
-                    fileModels.put(filePath, file);
-                    i++;
+                String title = songsCursor.getString(songsCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME));
+                String artist = songsCursor.getString(songsCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
+                String album = songsCursor.getString(songsCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
+                int duration = songsCursor.getInt(songsCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
+                String path = songsCursor.getString(songsCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
+
+                if (isMusic) {
+                    songsDao.addSong(title, artist, album, duration, path);
                 }
 
             } while (songsCursor.moveToNext());
         }
         songsCursor.close();
-
-        return fileModels;
     }
 
     private Boolean isMusicFile(String filePath) {

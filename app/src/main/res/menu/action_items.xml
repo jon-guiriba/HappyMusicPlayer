@@ -3,23 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_search"
         android:background="@android:drawable/dialog_holo_light_frame"
         android:iconifiedByDefault="false"
         android:title="@string/search"
         app:actionViewClass="android.widget.SearchView"
+        android:visible="false"
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/action_sleep_timer"
+        android:id="@+id/actionSleepTimer"
         android:icon="@drawable/img_sleep_timer"
         android:title="Sleep Timer"
+        android:visible="false"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_settings"
         android:icon="@drawable/img_btn_settings"
         android:title="Settings"
+        android:visible="false"
         app:searchIcon="@null"
         app:showAsAction="always" />
 

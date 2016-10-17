@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,25 +57,11 @@ public class PlaylistItemsDao {
     }
 
     public void addNewPlaylistItem(int playlistId, int songId) {
-
-        Cursor cursor = db.query(
-                PlaylistItemsContract.PlaylistItemsEntry.TABLE_NAME,
-                PlaylistItemsContract.PlaylistItemsEntry.ALL,
-                PlaylistItemsContract.PlaylistItemsEntry.SONG_ID + "=? AND " +
-                        PlaylistItemsContract.PlaylistItemsEntry.PLAYLIST_ID + "=?",
-                new String[]{"" + playlistId, "" + songId},
-                null,
-                null,
-                null
-        );
-
-        if(cursor != null) return;
-
         ContentValues cv = new ContentValues();
         cv.put(PlaylistItemsContract.PlaylistItemsEntry.SONG_ID, songId);
         cv.put(PlaylistItemsContract.PlaylistItemsEntry.PLAYLIST_ID, playlistId);
 
-        db.insert(PlaylistItemsContract.PlaylistItemsEntry.TABLE_NAME, null, cv);
+        db.insertWithOnConflict(PlaylistItemsContract.PlaylistItemsEntry.TABLE_NAME, null, cv, SQLiteDatabase.CONFLICT_IGNORE);
     }
 
 

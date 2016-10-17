@@ -1,19 +1,22 @@
 package jon.happymusicplayer.com.happymusicplayer.data.daos;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import jon.happymusicplayer.com.happymusicplayer.data.DatabaseHelper;
+import jon.happymusicplayer.com.happymusicplayer.data.contracts.PlaylistItemsContract;
+import jon.happymusicplayer.com.happymusicplayer.data.contracts.PlaylistsContract;
 import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 import jon.happymusicplayer.com.happymusicplayer.data.contracts.SongsContract;
 import jon.happymusicplayer.com.happymusicplayer.utils.Utilities;
@@ -40,24 +43,17 @@ public class SongsDao {
                 null,
                 null,
                 null);
-
         if (cursor == null) return null;
 
         SongModel song = null;
-        try {
-            while (cursor.moveToNext()) {
-                int sId = cursor.getInt(cursor.getColumnIndex(SongsContract.SongsEntry.ID));
-                String sName = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.NAME));
-                String sPath = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.PATH));
-
-                song = new SongModel(sId, sName, sPath);
-            }
-        } finally {
-            cursor.close();
+        while (cursor.moveToNext()) {
+            song = getSongModel(cursor);
         }
+        cursor.close();
 
         return song;
     }
+
 
     public SongModel getSingleByPathAndPlayList(String path, int playListId) {
 
@@ -72,73 +68,55 @@ public class SongsDao {
         if (cursor == null) return null;
 
         SongModel song = null;
-        try {
-            while (cursor.moveToNext()) {
-                int sId = cursor.getInt(cursor.getColumnIndex(SongsContract.SongsEntry.ID));
-                String sName = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.NAME));
-                String sPath = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.PATH));
-
-                song = new SongModel(sId, sName, sPath);
-            }
-        } finally {
-            cursor.close();
+        while (cursor.moveToNext()) {
+            song = getSongModel(cursor);
         }
+        cursor.close();
 
         return song;
     }
 
     public List<SongModel> getAll() {
-        Cursor cursor = db.query(SongsContract.SongsEntry.TABLE_NAME, SongsContract.SongsEntry.ALL, null, null, null, null, SongsContract.SongsEntry.NAME);
+        Cursor cursor = db.query(
+                SongsContract.SongsEntry.TABLE_NAME,
+                SongsContract.SongsEntry.ALL,
+                null,
+                null,
+                null,
+                null,
+                SongsContract.SongsEntry.TITLE);
 
         List<SongModel> allSongsList = new ArrayList<>();
-        try {
-            while (cursor.moveToNext()) {
 
-                int id = cursor.getInt(cursor.getColumnIndex(SongsContract.SongsEntry.ID));
-                String name = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.NAME));
-                String path = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.PATH));
-
-                SongModel song = new SongModel(id, name, path);
-
-                allSongsList.add(song);
-            }
-        } finally {
-            cursor.close();
+        while (cursor.moveToNext()) {
+            allSongsList.add(getSongModel(cursor));
         }
+        cursor.close();
 
         return allSongsList;
     }
 
     public List<SongModel> getAllByPlayList(int playListId) {
+
         String query = "SELECT      s.*" +
-                "       FROM        playlist_items pi" +
-                "                   INNER JOIN playlists p ON p.id = pi.playlist_id" +
-                "                   INNER JOIN songs s ON s.id = pi.song_id" +
-                "       WHERE       p.id = ?" +
-                "       ORDER BY    s.name ";
+                "       FROM        " + PlaylistItemsContract.PlaylistItemsEntry.TABLE_NAME + " pi" +
+                "                   INNER JOIN " + PlaylistsContract.PlaylistsEntry.TABLE_NAME + " p ON p.id = pi.playlist_id" +
+                "                   INNER JOIN " + SongsContract.SongsEntry.TABLE_NAME + " s ON s.id = pi.song_id" +
+                "       WHERE       p." + PlaylistsContract.PlaylistsEntry.ID + " = ?" +
+                "       ORDER BY    s." + SongsContract.SongsEntry.TITLE;
 
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(playListId)});
-        if (cursor == null) return null;
+
+        boolean isCursorEmpty = !(cursor.moveToFirst()) || cursor.getCount() == 0;
+        if (isCursorEmpty) return null;
 
         List<SongModel> songsList = new ArrayList<>();
 
-        try {
-            while (cursor.moveToNext()) {
-                int id = cursor.getInt(cursor.getColumnIndex(SongsContract.SongsEntry.ID));
-                String name = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.NAME));
-                String path = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.PATH));
-                String dateModified = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.DATE_MODIFIED));
-
-                DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-
-                songsList.add(new SongModel(id, name, path, format.parse(dateModified)));
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } finally {
-            cursor.close();
+        while (cursor.moveToNext()) {
+            songsList.add(getSongModel(cursor));
         }
-
+        cursor.close();
+        Log.i("getAllbyPlayList", "X> "+songsList.size());
         return songsList;
     }
 
@@ -153,28 +131,53 @@ public class SongsDao {
 
         List<SongModel> songsList = new ArrayList<>();
 
-        try {
-            while (cursor.moveToNext()) {
-                int id = cursor.getInt(cursor.getColumnIndex(SongsContract.SongsEntry.ID));
-                String name = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.NAME));
-                String path = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.PATH));
-                String dateModified = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.DATE_MODIFIED));
-                Date currentDate = Calendar.getInstance().getTime();
+        while (cursor.moveToNext()) {
+            String dateModified = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.DATE_MODIFIED));
+            Date currentDate = Calendar.getInstance().getTime();
 
-                DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
+            try {
                 if (Utilities.millisToDays(currentDate.getTime() - format.parse(dateModified).getTime()) < 3)
-                    songsList.add(new SongModel(id, name, path, format.parse(dateModified)));
+                    songsList.add(getSongModel(cursor));
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } finally {
-            cursor.close();
         }
+        cursor.close();
 
         return songsList;
     }
 
+    public void addSong(String title, String artist, String album, int duration, String path) {
+        ContentValues cv = new ContentValues();
+        cv.put(SongsContract.SongsEntry.TITLE, title);
+        cv.put(SongsContract.SongsEntry.ARTIST, artist);
+        cv.put(SongsContract.SongsEntry.ALBUM, album);
+        cv.put(SongsContract.SongsEntry.DURATION, duration);
+        cv.put(SongsContract.SongsEntry.PATH, path);
+        db.insertWithOnConflict(SongsContract.SongsEntry.TABLE_NAME, null, cv, SQLiteDatabase.CONFLICT_IGNORE);
+    }
+
+
+    private SongModel getSongModel(Cursor cursor) {
+        int id = cursor.getInt(cursor.getColumnIndex(SongsContract.SongsEntry.ID));
+        String title = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.TITLE));
+        String artist = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.ARTIST));
+        String album = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.ALBUM));
+        String path = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.PATH));
+        int duration = cursor.getInt(cursor.getColumnIndex(SongsContract.SongsEntry.DURATION));
+        String dateModified = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.DATE_MODIFIED));
+
+        Date date = null;
+        try {
+            date = new SimpleDateFormat("yyyy-dd-MM").parse(dateModified);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return new SongModel(id, title, artist, album, duration, date, path);
+    }
 
 
 }

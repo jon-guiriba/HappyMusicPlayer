@@ -34,11 +34,10 @@ public class AppMusicPlayer extends MediaPlayer {
     private SongModel song;
     private boolean isPrepared;
     private boolean isShuffle;
-    private int playListIndex;
+    private int playlistIndex;
     private String repeatState;
     private int prevPlayListIndex;
     private String playlistName;
-
 
     private final BroadcastReceiver headsetReceiver = new BroadcastReceiver() {
         @Override
@@ -48,8 +47,6 @@ public class AppMusicPlayer extends MediaPlayer {
             }
         }
     };
-    private Presenter presenter;
-
 
     public AppMusicPlayer(Context context) {
         this.context = context;
@@ -57,7 +54,7 @@ public class AppMusicPlayer extends MediaPlayer {
 
 
     public void playSong(int index) {
-        playListIndex = index;
+        playlistIndex = index;
         song = playlist.get(index);
         context.registerReceiver(headsetReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
 
@@ -75,7 +72,7 @@ public class AppMusicPlayer extends MediaPlayer {
     public void playSong(String path) {
         int index = getPathIndex(path);
 
-        playListIndex = index;
+        playlistIndex = index;
         song = playlist.get(index);
         context.registerReceiver(headsetReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
 
@@ -122,26 +119,41 @@ public class AppMusicPlayer extends MediaPlayer {
         }
     }
 
-    public void playNextSong() {
-        prevPlayListIndex = playListIndex;
+    public int playNextSong() {
+        prevPlayListIndex = playlistIndex;
+
+        boolean isLastPlaylistIndex = playlistIndex == playlist.size() - 1;
+
         if (isShuffle) {
-            playSong(Utilities.getRandomInt(playlist.size(), 0));
-        } else if (playListIndex == playlist.size() - 1) {
+            playlistIndex = (Utilities.getRandomInt(playlist.size(), 0));
+        } else if (isLastPlaylistIndex) {
+            playlistIndex = 0;
             playSong(0);
         } else {
-            playSong(playListIndex + 1);
+            playlistIndex++;
         }
 
+        playSong(playlistIndex);
+        return playlistIndex;
     }
 
-    public void playPrevSong() {
-        if (isShuffle && prevPlayListIndex != -1) {
-            playSong(prevPlayListIndex);
+    public int playPrevSong() {
+
+        boolean isValidPrevPlaylistIndex = prevPlayListIndex != -1;
+
+        if (isValidPrevPlaylistIndex) {
+            playlistIndex = prevPlayListIndex;
             prevPlayListIndex = -1;
-        } else if (playListIndex == 0)
-            playSong(playlist.size() - 1);
+        } else if (isShuffle) {
+            playlistIndex = (Utilities.getRandomInt(playlist.size(), 0));
+        } else if (playlistIndex == 0)
+            playlistIndex = playlist.size() - 1;
         else
-            playSong(playListIndex - 1);
+            playlistIndex--;
+
+        playSong(playlistIndex);
+
+        return playlistIndex;
     }
 
     @Override
@@ -258,7 +270,4 @@ public class AppMusicPlayer extends MediaPlayer {
         this.repeatState = repeatState;
     }
 
-    public void setPresenter(Presenter presenter) {
-        this.presenter = presenter;
-    }
 }

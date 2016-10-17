@@ -13,17 +13,23 @@ public final class SongsContract {
         public static final String TABLE_NAME = "songs";
 
         public static final String ID = "id";
-        public static final String NAME = "name";
+        public static final String TITLE = "title";
+        public static final String ARTIST = "artist";
+        public static final String ALBUM = "album";
+        public static final String DURATION = "duration";
         public static final String PATH = "path";
         public static final String DATE_MODIFIED = "date_modified";
 
-        public static final String[] ALL = {ID, NAME, PATH};
+        public static final String[] ALL = {ID, TITLE, ARTIST, ALBUM, DURATION, PATH, DATE_MODIFIED};
 
         public static final String SQL_CREATE =
                 "CREATE TABLE " + TABLE_NAME +
                         "( " +
                         ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                        NAME + " VARCHAR(80) NOT NULL, " +
+                        TITLE + " VARCHAR(80) NOT NULL, " +
+                        ARTIST + " VARCHAR(80) NOT NULL, " +
+                        ALBUM + " VARCHAR(80) NOT NULL, " +
+                        DURATION + " INTEGER NOT NULL, " +
                         PATH + " VARCHAR(255) NOT NULL UNIQUE, " +
                         DATE_MODIFIED + " DATE NOT NULL DEFAULT CURRENT_DATE " +
                         ")";
