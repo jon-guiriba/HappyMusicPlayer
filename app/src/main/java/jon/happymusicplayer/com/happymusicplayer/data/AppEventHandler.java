@@ -57,22 +57,10 @@ public class AppEventHandler implements View.OnClickListener,
             case R.id.btnBackward:
                 songIndex = player.playPrevSong();
                 presenter.highlightSelectedPlaylistItem(songIndex);
-                presenter.updateSongDetails(
-                        player.getSong().getTitle(),
-                        Utilities.getDurationAsText(0, player.getDuration())
-                );
-                presenter.updatePlayButton(player.isPlaying());
-                presenter.resetProgressBar();
                 break;
             case R.id.btnForward:
                 songIndex = player.playNextSong();
                 presenter.highlightSelectedPlaylistItem(songIndex);
-                presenter.updateSongDetails(
-                        player.getSong().getTitle(),
-                        Utilities.getDurationAsText(0, player.getDuration())
-                );
-                presenter.updatePlayButton(player.isPlaying());
-                presenter.resetProgressBar();
                 break;
 
             case R.id.btnRepeat:
