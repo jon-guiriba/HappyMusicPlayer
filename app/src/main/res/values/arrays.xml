@@ -15,6 +15,15 @@
 
     <string-array name="context_options">
         <item>Add To Playlist</item>
+        <item>Delete</item>
+        <item>Blacklist</item>
+    </string-array>
+
+    <string-array name="sort_options">
+        <item>Title</item>
+        <item>Artist</item>
+        <item>Date</item>
+        <item>Duration</item>
     </string-array>
 
     <string-array name="test_array">

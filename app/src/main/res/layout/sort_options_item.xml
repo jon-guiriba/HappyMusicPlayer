@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/addToPlaylistItem"
+    android:id="@+id/sortOptionsItem"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
     android:paddingTop="10dp"
@@ -8,6 +8,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:ellipsize="end"
+    android:maxLines="1"
     android:textSize="@dimen/medium_text_size"
     android:gravity="center"
     />

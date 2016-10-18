@@ -23,5 +23,6 @@ public class UpdateProgressBarTask implements Runnable {
         if (!player.isPrepared()) return;
         int trackProgress = Utilities.getPercentage(player.getCurrentPosition(), player.getDuration());
         presenter.updateProgressBar(trackProgress);
+        presenter.updateSongDuration(Utilities.getDurationAsText(player.getCurrentPosition(), player.getDuration()));
     }
 }

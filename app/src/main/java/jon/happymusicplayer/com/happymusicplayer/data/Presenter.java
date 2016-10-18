@@ -5,16 +5,12 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.ListPopupWindow;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,7 +23,6 @@ import android.widget.SearchView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jon.happymusicplayer.com.happymusicplayer.R;
@@ -39,6 +34,7 @@ import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 
 public class Presenter {
 
+    private final LinearLayout trackProgressLayout;
     Context context;
     private static final int SONG_PROGRESS_BAR_REFRESH_RATE = 40;
 
@@ -47,11 +43,13 @@ public class Presenter {
     private ImageButton btnBackward;
     private ImageButton btnRepeat;
     private ImageButton btnShuffle;
+    private ImageButton btnSort;
     private Button btnSubmitAddNewPlaylist;
     private ListView lvCurrentPlaylist;
     private ListView lvDrawerPlaylist;
     private ListView lvAddToPlaylistCurrentPlayLists;
-    private TextView tvCurrentSong;
+    private TextView tvSongTitle;
+    private TextView tvSongDuration;
     private EditText etAddNewPlaylist;
     private SearchView searchView;
     private SeekBar sbSongProgressBar;
@@ -67,6 +65,8 @@ public class Presenter {
     private Runnable trackBarUpdateTask;
     private ArrayAdapter<SongModel> currentPlaylistAdapter;
     private ListView lvNumberPickerHours;
+    private PopupWindow sortPopupWindow;
+    private ListView lvSortOptions;
 
     public Presenter(Context context) {
         this.context = context;
@@ -78,16 +78,19 @@ public class Presenter {
         btnShuffle = (ImageButton) ((Activity) context).findViewById(R.id.btnShuffle);
         lvCurrentPlaylist = (ListView) ((Activity) context).findViewById(R.id.lvCurrentPlayList);
         lvNumberPickerHours = (ListView) ((Activity) context).findViewById(R.id.lvNumberPickerHours);
-        tvCurrentSong = (TextView) ((Activity) context).findViewById(R.id.tvCurrentAudioFile);
         lvDrawerPlaylist = (ListView) ((Activity) context).findViewById(R.id.lvDrawerPlaylist);
+        tvSongTitle = (TextView) ((Activity) context).findViewById(R.id.tvSongTitle);
+        tvSongDuration = (TextView) ((Activity) context).findViewById(R.id.tvSongDuration);
         sbSongProgressBar = (SeekBar) ((Activity) context).findViewById(R.id.sbTrackProgressBar);
         drawerLayout = (DrawerLayout) ((Activity) context).findViewById(R.id.drawerLayout);
+        trackProgressLayout = (LinearLayout) ((Activity) context).findViewById(R.id.trackProgressLayout);
         init();
     }
 
     private void init() {
         sbSongProgressBar.setMax(100);
         lvCurrentPlaylist.setTextFilterEnabled(false);
+        drawerLayout.setScrimColor(Color.TRANSPARENT);
         setupSongContextOptionsPopupWindow();
     }
 
@@ -211,8 +214,9 @@ public class Presenter {
     }
 
 
-    public void updateCurrentSongText(String songName) {
-        this.tvCurrentSong.setText(songName);
+    public void updateSongDetails(String songName, String songDuration) {
+        tvSongTitle.setText(songName);
+        tvSongDuration.setText(songDuration);
     }
 
     public void showSongOptions(View view) {
@@ -331,7 +335,55 @@ public class Presenter {
     }
 
     public void setupSearchView() {
-        searchView = (SearchView) ((Activity) context).findViewById(R.id.action_search);
+        searchView = (SearchView) ((Activity) context).findViewById(R.id.actionSearch);
         removeSearchIcon();
+    }
+
+    public void setupSortPopupView() {
+        LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View popupLayout = layoutInflater.inflate(R.layout.popup_sort, null, false);
+        sortPopupWindow = new PopupWindow(
+                popupLayout,
+                250,
+                350,
+                true);
+        sortPopupWindow.setOutsideTouchable(true);
+        sortPopupWindow.setFocusable(true);
+        sortPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        ArrayAdapter<String> sortAdapter =
+                new ArrayAdapter<>(
+                        context,
+                        R.layout.sort_options_item,
+                        context.getResources().getStringArray(R.array.sort_options)
+                );
+
+        lvSortOptions = (ListView) popupLayout.findViewById(R.id.lvSortOptions);
+        lvSortOptions.setAdapter(sortAdapter);
+
+    }
+
+    public void showSortPopupView() {
+        sortPopupWindow.showAtLocation(((Activity) context).findViewById(R.id.main_relative_layout), Gravity.CENTER, 0, 0);
+    }
+
+    public void hideSortPopupView() {
+        sortPopupWindow.dismiss();
+    }
+
+    public void setupSortButton() {
+        btnSort = (ImageButton) ((Activity) context).findViewById(R.id.actionSort);
+    }
+
+    public ImageButton getSortButton() {
+        return btnSort;
+    }
+
+    public ListView getSortListView() {
+        return lvSortOptions;
+    }
+
+    public void updateSongDuration(String durationAsText) {
+        tvSongDuration.setText(durationAsText);
     }
 }

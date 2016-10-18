@@ -37,9 +37,7 @@ public class MainActivity extends AppCompatActivity  {
         player = new AppMusicPlayer(this);
         eventHandler = new AppEventHandler(this, presenter, player);
         init();
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -57,11 +55,13 @@ public class MainActivity extends AppCompatActivity  {
 
         presenter.setupSearchView();
         presenter.getSearchView().setOnQueryTextListener(eventHandler);
+
+        presenter.setupSortButton();
+        presenter.getSortButton().setOnClickListener(eventHandler);
         return true;
     }
 
     private void init() {
-
         logPhoneDetails();
         setupEventHandlers();
         loadUserSettings();
@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity  {
         SettingsManager.setContext(this);
 
         new UpdateAllSongsPlayListTask(this, eventHandler).execute();
-
     }
 
     private void logPhoneDetails() {

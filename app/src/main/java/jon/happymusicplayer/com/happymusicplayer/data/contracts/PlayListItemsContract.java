@@ -20,11 +20,13 @@ public final class PlaylistItemsContract {
 
         public static final String SQL_CREATE =
                 "CREATE TABLE " + TABLE_NAME +
-                        "( " + ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                        "( " +
+                        ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                         PLAYLIST_ID + " INTEGER NOT NULL, " +
                         SONG_ID + " INTEGER NOT NULL, " +
-                        " FOREIGN KEY(" + PLAYLIST_ID + ") REFERENCES " + PlaylistsContract.PlaylistsEntry.TABLE_NAME + "(" + PlaylistsContract.PlaylistsEntry.ID + ")," +
-                        " FOREIGN KEY(" + SONG_ID + ") REFERENCES " + SongsContract.SongsEntry.TABLE_NAME + "(" + SongsContract.SongsEntry.ID + ")" +
+                        " UNIQUE (" + PLAYLIST_ID + "," + SONG_ID + ")," +
+                        " FOREIGN KEY (" + PLAYLIST_ID + ") REFERENCES " + PlaylistsContract.PlaylistsEntry.TABLE_NAME + "(" + PlaylistsContract.PlaylistsEntry.ID + ")," +
+                        " FOREIGN KEY (" + SONG_ID + ") REFERENCES " + SongsContract.SongsEntry.TABLE_NAME + "(" + SongsContract.SongsEntry.ID + ")" +
                         ")";
 
         public static final String SQL_DROP = "DROP TABLE " + TABLE_NAME;

@@ -16,6 +16,7 @@ import java.util.List;
 
 import jon.happymusicplayer.com.happymusicplayer.R;
 import jon.happymusicplayer.com.happymusicplayer.adapters.OnTaskCompleted;
+import jon.happymusicplayer.com.happymusicplayer.data.contracts.SongsContract;
 import jon.happymusicplayer.com.happymusicplayer.data.daos.PlaylistItemsDao;
 import jon.happymusicplayer.com.happymusicplayer.data.daos.PlaylistsDao;
 import jon.happymusicplayer.com.happymusicplayer.data.daos.SongsDao;
@@ -56,14 +57,20 @@ public class AppEventHandler implements View.OnClickListener,
             case R.id.btnBackward:
                 songIndex = player.playPrevSong();
                 presenter.highlightSelectedPlaylistItem(songIndex);
-                presenter.updateCurrentSongText(player.getSong().getTitle());
+                presenter.updateSongDetails(
+                        player.getSong().getTitle(),
+                        Utilities.getDurationAsText(0, player.getDuration())
+                );
                 presenter.updatePlayButton(player.isPlaying());
                 presenter.resetProgressBar();
                 break;
             case R.id.btnForward:
                 songIndex = player.playNextSong();
                 presenter.highlightSelectedPlaylistItem(songIndex);
-                presenter.updateCurrentSongText(player.getSong().getTitle());
+                presenter.updateSongDetails(
+                        player.getSong().getTitle(),
+                        Utilities.getDurationAsText(0, player.getDuration())
+                );
                 presenter.updatePlayButton(player.isPlaying());
                 presenter.resetProgressBar();
                 break;
@@ -85,6 +92,12 @@ public class AppEventHandler implements View.OnClickListener,
                 plDao.addNewPlaylist(presenter.getAddNewPlaylistText());
                 presenter.updateDrawerPlaylist(player.getAllPlayLists());
                 presenter.hideCreateNewPlaylistPopupWindow();
+                break;
+
+            case R.id.actionSort:
+                presenter.setupSortPopupView();
+                presenter.getSortListView().setOnItemClickListener(this);
+                presenter.showSortPopupView();
                 break;
 
         }
@@ -128,28 +141,37 @@ public class AppEventHandler implements View.OnClickListener,
                 presenter.hideSongOptions();
                 break;
 
-            case R.id.popupAddToPlaylistItem:
+            case R.id.addToPlaylistItem:
                 playListName = (String) parent.getItemAtPosition(position);
                 PlaylistsDao plDao = new PlaylistsDao(context);
-                PlayListModel playlist = plDao.getSingleByName(playListName);
+                PlayListModel playlistEntity = plDao.getSingleByName(playListName);
 
                 PlaylistItemsDao plItemsDao = new PlaylistItemsDao(context);
-                plItemsDao.addNewPlaylistItem(playlist.getId(), selectedSong.getId());
+                plItemsDao.addNewPlaylistItem(playlistEntity.getId(), selectedSong.getId());
 
                 presenter.hideAddPlaylistPopupWindow();
+                break;
+
+            case R.id.sortOptionsItem:
+                SongsDao songsDao = new SongsDao(context);
+                PlaylistsDao playlistDao = new PlaylistsDao(context);
+                int playlistId = playlistDao.getSingleByName(player.getPlaylistName()).getId();
+
+                List<SongModel> playlist = songsDao.getAllByPlayList(playlistId, getColumnName(position));
+                player.setPlaylist(playlist);
+                presenter.updatePlaylist(playlist);
+                presenter.hideSortPopupView();
                 break;
         }
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        Log.i("HandlerEvent", "onMediaplyerCompletionListener");
         presenter.resetProgressBar();
 
         switch (player.getRepeatState()) {
             case AppMusicPlayer.REPEAT_ALL:
                 player.playNextSong();
-                presenter.updateCurrentSongText(player.getSong().getTitle());
                 break;
             case AppMusicPlayer.REPEAT_ONE:
                 player.play();
@@ -164,7 +186,10 @@ public class AppEventHandler implements View.OnClickListener,
         player.setIsPrepared(true);
         player.play();
 
-        presenter.updateCurrentSongText(player.getSong().getTitle());
+        presenter.updateSongDetails(
+                player.getSong().getTitle(),
+                Utilities.getDurationAsText(0, player.getDuration())
+        );
         presenter.resetProgressBar();
         presenter.updatePlayButton(player.isPlaying());
         presenter.startUpdateProgressBar();
@@ -230,7 +255,7 @@ public class AppEventHandler implements View.OnClickListener,
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         presenter.stopUpdateProgressBar();
-        if (!player.isPlaying()) return;
+        if (!player.isPrepared()) return;
 
         int currentPosition = Utilities.getProgressToTimer(seekBar.getProgress(), player.getDuration());
         player.seekTo(currentPosition);
@@ -241,8 +266,26 @@ public class AppEventHandler implements View.OnClickListener,
     public void onTaskCompleted() {
         SongsDao songsDao = new SongsDao(context);
         List<SongModel> playList = songsDao.getAllByPlayList(1);
-        if (playList.size() == 0)
+        if (player.getPlaylist() == null)
             player.setPlaylist(playList);
+        presenter.updatePlaylist(playList);
+    }
+
+
+    private String getColumnName(int position) {
+        switch (position) {
+            case 0:
+                return SongsContract.SongsEntry.TITLE;
+            case 1:
+                return SongsContract.SongsEntry.ARTIST;
+            case 2:
+                return SongsContract.SongsEntry.DATE_MODIFIED;
+            case 3:
+                return SongsContract.SongsEntry.DURATION;
+            default:
+                return SongsContract.SongsEntry.TITLE;
+        }
+
     }
 
 

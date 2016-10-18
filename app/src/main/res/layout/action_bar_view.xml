@@ -7,7 +7,7 @@
     >
     
     <SearchView
-        android:id="@+id/action_search"
+        android:id="@+id/actionSearch"
         android:layout_width="150dp"
         android:layout_height="match_parent"
         android:gravity="center"
@@ -18,10 +18,11 @@
     </SearchView>
 
     <ImageButton
+        android:id="@+id/actionSort"
         android:layout_width="50dp"
         android:layout_height="match_parent"
-        android:src="@drawable/img_sort"
-        android:layout_toEndOf="@id/action_search"
+        android:src="@drawable/img_sort_colored"
+        android:layout_toEndOf="@id/actionSearch"
         android:background="@color/colorPrimary"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"

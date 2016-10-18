@@ -128,7 +128,6 @@ public class AppMusicPlayer extends MediaPlayer {
             playlistIndex = (Utilities.getRandomInt(playlist.size(), 0));
         } else if (isLastPlaylistIndex) {
             playlistIndex = 0;
-            playSong(0);
         } else {
             playlistIndex++;
         }

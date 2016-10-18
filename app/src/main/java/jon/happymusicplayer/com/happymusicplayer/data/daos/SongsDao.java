@@ -120,6 +120,30 @@ public class SongsDao {
         return songsList;
     }
 
+    public List<SongModel> getAllByPlayList(int playListId, String orderBy) {
+
+        String query = "SELECT      s.*" +
+                "       FROM        " + PlaylistItemsContract.PlaylistItemsEntry.TABLE_NAME + " pi" +
+                "                   INNER JOIN " + PlaylistsContract.PlaylistsEntry.TABLE_NAME + " p ON p.id = pi.playlist_id" +
+                "                   INNER JOIN " + SongsContract.SongsEntry.TABLE_NAME + " s ON s.id = pi.song_id" +
+                "       WHERE       p." + PlaylistsContract.PlaylistsEntry.ID + " = ?" +
+                "       ORDER BY    s." + orderBy;
+
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(playListId)});
+
+        boolean isCursorEmpty = !(cursor.moveToFirst()) || cursor.getCount() == 0;
+        if (isCursorEmpty) return null;
+
+        List<SongModel> songsList = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            songsList.add(getSongModel(cursor));
+        }
+        cursor.close();
+        Log.i("getAllbyPlayList", "X> "+songsList.size());
+        return songsList;
+    }
+
     public List<SongModel> getAllRecentlyAdded() {
         String query = "SELECT  s.*" +
                 "       FROM    playlist_items pi" +
