@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:focusable="true">
 
     <ImageButton
         android:id="@+id/actionSort"
-        android:layout_width="50dp"
+        android:layout_width="@dimen/actionBarWidth"
         android:layout_height="match_parent"
         android:background="@color/colorPrimary"
         android:paddingBottom="10dp"
@@ -14,11 +15,33 @@
         android:scaleType="fitCenter"
         android:src="@drawable/img_sort" />
 
+    <ImageButton
+        android:id="@+id/actionFilterByArtist"
+        android:layout_width="@dimen/actionBarWidth"
+        android:layout_height="match_parent"
+        android:layout_toEndOf="@id/actionSort"
+        android:background="@color/colorPrimary"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/img_artist" />
+
+    <ImageButton
+        android:id="@+id/actionFilterByAlbum"
+        android:layout_width="@dimen/actionBarWidth"
+        android:layout_height="match_parent"
+        android:layout_toEndOf="@id/actionFilterByArtist"
+        android:background="@color/colorPrimary"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/img_album" />
+
     <SearchView
         android:id="@+id/actionSearch"
         android:layout_width="150dp"
         android:layout_height="match_parent"
-        android:layout_toEndOf="@id/actionSort"
+        android:layout_toEndOf="@id/actionFilterByAlbum"
         android:iconifiedByDefault="false"
         android:queryHint="@string/search">
 

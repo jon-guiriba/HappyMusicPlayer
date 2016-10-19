@@ -1,18 +1,23 @@
-package jon.happymusicplayer.com.happymusicplayer;
+package jon.happymusicplayer.com.happymusicplayer.Activities;
 
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.graphics.Point;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import jon.happymusicplayer.com.happymusicplayer.R;
 import jon.happymusicplayer.com.happymusicplayer.data.AppEventHandler;
 import jon.happymusicplayer.com.happymusicplayer.data.AppMusicPlayer;
 import jon.happymusicplayer.com.happymusicplayer.data.Presenter;
@@ -21,7 +26,7 @@ import jon.happymusicplayer.com.happymusicplayer.tasks.UpdateAllSongsPlayListTas
 import jon.happymusicplayer.com.happymusicplayer.tasks.UpdateProgressBarTask;
 
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
     private Presenter presenter;
     private AppMusicPlayer player;
     private AppEventHandler eventHandler;
@@ -37,6 +42,7 @@ public class MainActivity extends AppCompatActivity  {
         player = new AppMusicPlayer(this);
         eventHandler = new AppEventHandler(this, presenter, player);
         init();
+
     }
 
     @Override
@@ -58,7 +64,27 @@ public class MainActivity extends AppCompatActivity  {
 
         presenter.setupSortButton();
         presenter.getSortButton().setOnClickListener(eventHandler);
+
+        presenter.setupAlbumButton();
+        presenter.setupArtistButton();
+
+        presenter.layoutSettings(
+                getWindowManager().getDefaultDisplay(),
+                getResources().getConfiguration().orientation
+        );
         return true;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration config) {
+        super.onConfigurationChanged(config);
+
+        presenter.layoutSettings(
+                getWindowManager().getDefaultDisplay(),
+                config.orientation
+        );
+
+
     }
 
     private void init() {
@@ -117,6 +143,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     private boolean isBackPressed = false;
+
     @Override
     public void onBackPressed() {
         if (this.isBackPressed) {
@@ -135,8 +162,5 @@ public class MainActivity extends AppCompatActivity  {
             }
         }, 2000);
     }
-
-
-
 
 }

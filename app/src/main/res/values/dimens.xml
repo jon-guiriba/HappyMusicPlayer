@@ -3,6 +3,8 @@
     <dimen name="activity_horizontal_margin">8dp</dimen>
     <dimen name="activity_vertical_margin">8dp</dimen>
     <dimen name="header_text_size">20sp</dimen>
+    <dimen name="large_text_size">17sp</dimen>
     <dimen name="default_text_size">16sp</dimen>
     <dimen name="medium_text_size">14sp</dimen>
+    <dimen name="actionBarWidth">45dp</dimen>
 </resources>

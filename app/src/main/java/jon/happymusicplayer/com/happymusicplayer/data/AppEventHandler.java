@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 import android.widget.SeekBar;
 
@@ -92,6 +93,12 @@ public class AppEventHandler implements View.OnClickListener,
                 presenter.showSortPopupView();
                 break;
 
+            case R.id.actionFilterByArtist:
+                SongsDao songsDao = new SongsDao(context);
+                break;
+
+            case R.id.actionFilterByAlbum:
+                break;
         }
     }
 
@@ -110,7 +117,8 @@ public class AppEventHandler implements View.OnClickListener,
 
         switch (v.getId()) {
             case R.id.currentPlaylistItem:
-                final SongModel song = (SongModel) parent.getItemAtPosition(position);
+                SongModel song = (SongModel) parent.getItemAtPosition(position);
+                selectedSong = song;
                 player.playSong(song.getPath());
                 break;
 
@@ -180,9 +188,7 @@ public class AppEventHandler implements View.OnClickListener,
                         break;
                 }
 
-
                 break;
-
             case R.id.addToPlaylistItem:
                 playListName = (String) parent.getItemAtPosition(position);
                 PlaylistsDao plDao = new PlaylistsDao(context);
@@ -204,6 +210,7 @@ public class AppEventHandler implements View.OnClickListener,
                 presenter.updatePlaylist(playlist);
                 presenter.hideSortPopupView();
                 break;
+
         }
     }
 

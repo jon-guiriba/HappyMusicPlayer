@@ -2,12 +2,15 @@ package jon.happymusicplayer.com.happymusicplayer.data;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.ListPopupWindow;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,6 +48,8 @@ public class Presenter {
     private ImageButton btnRepeat;
     private ImageButton btnShuffle;
     private ImageButton btnSort;
+    private ImageButton btnArtist;
+    private ImageButton btnAlbum;
     private Button btnSubmitAddNewPlaylist;
     private ListView lvCurrentPlaylist;
     private ListView lvDrawerPlaylist;
@@ -340,6 +345,14 @@ public class Presenter {
         removeSearchIcon();
     }
 
+    public void setupArtistButton() {
+        btnArtist = (ImageButton) ((Activity) context).findViewById(R.id.actionFilterByArtist);
+    }
+
+    public void setupAlbumButton() {
+        btnAlbum = (ImageButton) ((Activity) context).findViewById(R.id.actionFilterByAlbum);
+    }
+
     public void setupSortPopupView() {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View popupLayout = layoutInflater.inflate(R.layout.popup_sort, null, false);
@@ -386,5 +399,103 @@ public class Presenter {
 
     public void updateSongDuration(String durationAsText) {
         tvSongDuration.setText(durationAsText);
+    }
+
+    public ImageButton getArtistButton() {
+        return btnArtist;
+    }
+
+    public ImageButton getAlbumButton() {
+        return btnAlbum;
+    }
+
+    public ImageButton getShuffleButton() {
+        return btnShuffle;
+    }
+
+    public ImageButton getBackwardButton() {
+        return btnBackward;
+    }
+
+    public ImageButton getPlayButton() {
+        return btnPlay;
+    }
+
+    public ImageButton getForwardButton() {
+        return btnForward;
+    }
+
+    public ImageButton getRepeatButton() {
+        return btnRepeat;
+    }
+
+    public void layoutSettings(Display display, int orientation) {
+
+        switch (orientation) {
+            case Configuration.ORIENTATION_LANDSCAPE:
+                Point size = new Point();
+                display.getSize(size);
+                int actionbarMarginRight = new Double(size.x * 0.15).intValue();
+                int playerControlsMargin = new Double(size.x * 0.08).intValue();
+
+                ((ViewGroup.MarginLayoutParams) btnSort.
+                        getLayoutParams()).rightMargin = actionbarMarginRight;
+
+                ((ViewGroup.MarginLayoutParams) btnArtist.
+                        getLayoutParams()).rightMargin = actionbarMarginRight;
+
+                ((ViewGroup.MarginLayoutParams) btnAlbum.
+                        getLayoutParams()).rightMargin = actionbarMarginRight - 30;
+
+                ((ViewGroup.MarginLayoutParams) btnShuffle.
+                        getLayoutParams()).rightMargin = playerControlsMargin;
+
+                ((ViewGroup.MarginLayoutParams) btnShuffle.
+                        getLayoutParams()).leftMargin = playerControlsMargin;
+
+                ((ViewGroup.MarginLayoutParams) btnBackward.
+                        getLayoutParams()).rightMargin = playerControlsMargin;
+
+                ((ViewGroup.MarginLayoutParams) btnPlay.
+                        getLayoutParams()).rightMargin = playerControlsMargin;
+
+                ((ViewGroup.MarginLayoutParams) btnForward.
+                        getLayoutParams()).rightMargin = playerControlsMargin;
+
+                ((ViewGroup.MarginLayoutParams) btnRepeat.
+                        getLayoutParams()).rightMargin = playerControlsMargin;
+                break;
+            case Configuration.ORIENTATION_PORTRAIT:
+                ((ViewGroup.MarginLayoutParams) btnSort.
+                        getLayoutParams()).rightMargin = 0;
+
+                ((ViewGroup.MarginLayoutParams) btnArtist.
+                        getLayoutParams()).rightMargin = 0;
+
+                ((ViewGroup.MarginLayoutParams) btnAlbum.
+                        getLayoutParams()).rightMargin = 0;
+
+                ((ViewGroup.MarginLayoutParams) btnShuffle.
+                        getLayoutParams()).rightMargin = 0;
+
+                ((ViewGroup.MarginLayoutParams) btnShuffle.
+                        getLayoutParams()).leftMargin = 0;
+
+                ((ViewGroup.MarginLayoutParams) btnBackward.
+                        getLayoutParams()).rightMargin = 0;
+
+                ((ViewGroup.MarginLayoutParams) btnPlay.
+                        getLayoutParams()).rightMargin = 0;
+
+                ((ViewGroup.MarginLayoutParams) btnForward.
+                        getLayoutParams()).rightMargin = 0;
+
+                ((ViewGroup.MarginLayoutParams) btnRepeat.
+                        getLayoutParams()).rightMargin = 0;
+                break;
+
+        }
+
+
     }
 }

@@ -12,4 +12,6 @@
     <string name="add_new_playlist">Add new playlist</string>
     <string name="search">Search</string>
     <string name="sort_by">Sort By</string>
+    <string name="songDurationPlaceHolder">- - : - - / - - : - -</string>
+    <string name="playlists">Playlists</string>
 </resources>
