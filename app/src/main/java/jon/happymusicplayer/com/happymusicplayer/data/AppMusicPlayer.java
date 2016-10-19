@@ -269,4 +269,7 @@ public class AppMusicPlayer extends MediaPlayer {
         this.repeatState = repeatState;
     }
 
+    public void updatePlaylist() {
+        setPlaylist(playlistName);
+    }
 }

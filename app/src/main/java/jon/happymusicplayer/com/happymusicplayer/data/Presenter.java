@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.ListPopupWindow;
 import android.view.Gravity;
@@ -91,12 +92,12 @@ public class Presenter {
         sbSongProgressBar.setMax(100);
         lvCurrentPlaylist.setTextFilterEnabled(false);
         drawerLayout.setScrimColor(Color.TRANSPARENT);
-        setupSongContextOptionsPopupWindow();
     }
 
-    private void setupSongContextOptionsPopupWindow() {
+    public void setupSongContextOptionsPopupWindow() {
         songOptions = new ListPopupWindow(context);
         songOptions.setAdapter(new ArrayAdapter<>(context, R.layout.context_menu_item, context.getResources().getTextArray(R.array.context_options)));
+        songOptions.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(context, R.color.colorPrimary)));
         songOptions.setWidth(300);
         songOptions.setHorizontalOffset(400);
         songOptions.setModal(true);

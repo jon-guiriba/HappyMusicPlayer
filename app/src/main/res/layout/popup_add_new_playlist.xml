@@ -4,7 +4,7 @@
     android:id="@+id/rlAddNewPlaylist"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@android:drawable/dialog_holo_light_frame"
+    android:background="@drawable/bg_white_with_shadow"
     android:orientation="vertical">
 
     <TextView
@@ -25,7 +25,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/tvAddNewPlaylist" />
+        android:layout_below="@+id/tvAddNewPlaylist"
+        android:textCursorDrawable="@null"
+        android:textColor="@color/colorPrimaryDark"
+        android:backgroundTint="@color/lightBlueHighlight"
+        android:inputType="text" />
 
     <Button
         android:id="@+id/btnSubmitAddNewPlaylist"

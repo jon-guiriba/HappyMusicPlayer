@@ -19,8 +19,11 @@ public final class SongsContract {
         public static final String DURATION = "duration";
         public static final String PATH = "path";
         public static final String DATE_MODIFIED = "date_modified";
+        public static final String IS_BLACKLISTED = "is_blacklisted";
 
-        public static final String[] ALL = {ID, TITLE, ARTIST, ALBUM, DURATION, PATH, DATE_MODIFIED};
+        public static final String[] ALL = {ID, TITLE, ARTIST, ALBUM, DURATION, PATH, DATE_MODIFIED,
+                IS_BLACKLISTED
+        };
 
         public static final String SQL_CREATE =
                 "CREATE TABLE " + TABLE_NAME +
@@ -31,12 +34,14 @@ public final class SongsContract {
                         ALBUM + " VARCHAR(80) NOT NULL, " +
                         DURATION + " INTEGER NOT NULL, " +
                         PATH + " VARCHAR(255) NOT NULL UNIQUE, " +
-                        DATE_MODIFIED + " DATE NOT NULL DEFAULT CURRENT_DATE " +
+                        DATE_MODIFIED + " DATE NOT NULL DEFAULT CURRENT_DATE, " +
+                        IS_BLACKLISTED + " TINYINT NOT NULL DEFAULT 0 " +
                         ")";
 
         public static final String SQL_DROP = "DROP TABLE " + TABLE_NAME;
 
         public static final String SQL_GET = "DROP TABLE " + TABLE_NAME;
+
 
     }
 }

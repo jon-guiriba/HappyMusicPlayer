@@ -16,7 +16,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static DatabaseHelper dbInstance;
 
     private static final String DATABASE_NAME = "happy_music_player_db";
-    private static final int DATABASE_VERSION = 26;
+    private static final int DATABASE_VERSION = 2;
 
 
     private final Context context;
@@ -49,6 +49,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL(PlaylistItemsContract.PlaylistItemsEntry.SQL_DROP);
+        db.execSQL(PlaylistsContract.PlaylistsEntry.SQL_DROP);
+        db.execSQL(SongsContract.SongsEntry.SQL_DROP);
+
+        db.execSQL(SongsContract.SongsEntry.SQL_CREATE);
+        db.execSQL(PlaylistsContract.PlaylistsEntry.SQL_CREATE);
+        db.execSQL(PlaylistItemsContract.PlaylistItemsEntry.SQL_CREATE);
+
+        ContentValues cv = new ContentValues();
+        cv.put(PlaylistsContract.PlaylistsEntry.NAME, "All Songs");
+        db.insert(PlaylistsContract.PlaylistsEntry.TABLE_NAME, null, cv);
+
+        cv = new ContentValues();
+        cv.put(PlaylistsContract.PlaylistsEntry.NAME, "Recently Added");
+        db.insert(PlaylistsContract.PlaylistsEntry.TABLE_NAME, null, cv);
+    }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL(PlaylistItemsContract.PlaylistItemsEntry.SQL_DROP);
         db.execSQL(PlaylistsContract.PlaylistsEntry.SQL_DROP);
         db.execSQL(SongsContract.SongsEntry.SQL_DROP);

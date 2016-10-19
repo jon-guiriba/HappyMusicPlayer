@@ -102,7 +102,8 @@ public class SongsDao {
                 "       FROM        " + PlaylistItemsContract.PlaylistItemsEntry.TABLE_NAME + " pi" +
                 "                   INNER JOIN " + PlaylistsContract.PlaylistsEntry.TABLE_NAME + " p ON p.id = pi.playlist_id" +
                 "                   INNER JOIN " + SongsContract.SongsEntry.TABLE_NAME + " s ON s.id = pi.song_id" +
-                "       WHERE       p." + PlaylistsContract.PlaylistsEntry.ID + " = ?" +
+                "       WHERE       p." + PlaylistsContract.PlaylistsEntry.ID + " = ? AND " +
+                "                   s." + SongsContract.SongsEntry.IS_BLACKLISTED + " = 0" +
                 "       ORDER BY    s." + SongsContract.SongsEntry.TITLE;
 
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(playListId)});
@@ -116,7 +117,6 @@ public class SongsDao {
             songsList.add(getSongModel(cursor));
         }
         cursor.close();
-        Log.i("getAllbyPlayList", "X> "+songsList.size());
         return songsList;
     }
 
@@ -126,7 +126,8 @@ public class SongsDao {
                 "       FROM        " + PlaylistItemsContract.PlaylistItemsEntry.TABLE_NAME + " pi" +
                 "                   INNER JOIN " + PlaylistsContract.PlaylistsEntry.TABLE_NAME + " p ON p.id = pi.playlist_id" +
                 "                   INNER JOIN " + SongsContract.SongsEntry.TABLE_NAME + " s ON s.id = pi.song_id" +
-                "       WHERE       p." + PlaylistsContract.PlaylistsEntry.ID + " = ?" +
+                "       WHERE       p." + PlaylistsContract.PlaylistsEntry.ID + " = ? AND " +
+                "                   s." + SongsContract.SongsEntry.IS_BLACKLISTED + " = 0" +
                 "       ORDER BY    s." + orderBy;
 
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(playListId)});
@@ -140,7 +141,6 @@ public class SongsDao {
             songsList.add(getSongModel(cursor));
         }
         cursor.close();
-        Log.i("getAllbyPlayList", "X> "+songsList.size());
         return songsList;
     }
 
@@ -148,7 +148,8 @@ public class SongsDao {
         String query = "SELECT  s.*" +
                 "       FROM    playlist_items pi" +
                 "               INNER JOIN playlists p ON p.id = pi.playlist_id" +
-                "               INNER JOIN songs s ON s.id = pi.song_id";
+                "               INNER JOIN songs s ON s.id = pi.song_id" +
+                "       WHERE   s.is_blacklisted = 0";
 
         Cursor cursor = db.rawQuery(query, null);
         if (cursor == null) return null;
@@ -204,4 +205,36 @@ public class SongsDao {
     }
 
 
+    public void deleteSong(SongModel song) {
+        deleteSongFromPlaylistItems(song);
+        deleteSongFromSongs(song);
+    }
+
+    private void deleteSongFromSongs(SongModel song) {
+        db.delete(
+                SongsContract.SongsEntry.TABLE_NAME,
+                SongsContract.SongsEntry.ID + "=?",
+                new String[]{"" + song.getId()}
+        );
+    }
+
+    private void deleteSongFromPlaylistItems(SongModel song) {
+        db.delete(
+                PlaylistItemsContract.PlaylistItemsEntry.TABLE_NAME,
+                PlaylistItemsContract.PlaylistItemsEntry.SONG_ID + "=?",
+                new String[]{"" + song.getId()}
+        );
+    }
+
+    public void setSongBlacklist(SongModel song, int blacklist) {
+        ContentValues cv = new ContentValues();
+        cv.put(SongsContract.SongsEntry.IS_BLACKLISTED, blacklist);
+
+        db.update(
+                SongsContract.SongsEntry.TABLE_NAME,
+                cv,
+                SongsContract.SongsEntry.ID + "=?",
+                new String[]{"" + song.getId()}
+        );
+    }
 }

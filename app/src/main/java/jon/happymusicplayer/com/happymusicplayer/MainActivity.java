@@ -96,7 +96,6 @@ public class MainActivity extends AppCompatActivity  {
         ((ListView) findViewById(R.id.lvDrawerPlaylist)).setOnItemLongClickListener(eventHandler);
         ((SeekBar) findViewById(R.id.sbTrackProgressBar)).setOnSeekBarChangeListener(eventHandler);
 
-        presenter.getSongOptions().setOnItemClickListener(eventHandler);
         presenter.getDrawerLayout().addDrawerListener(eventHandler);
 
         player.setOnCompletionListener(eventHandler);

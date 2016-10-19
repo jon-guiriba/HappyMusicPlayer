@@ -1,9 +1,12 @@
 package jon.happymusicplayer.com.happymusicplayer.data;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
@@ -11,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.SearchView;
 import android.widget.SeekBar;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,6 +98,8 @@ public class AppEventHandler implements View.OnClickListener,
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        presenter.setupSongContextOptionsPopupWindow();
+        presenter.getSongOptions().setOnItemClickListener(this);
         presenter.showSongOptions(view);
         selectedSong = (SongModel) parent.getItemAtPosition(position);
         return true;
@@ -104,7 +110,7 @@ public class AppEventHandler implements View.OnClickListener,
 
         switch (v.getId()) {
             case R.id.currentPlaylistItem:
-                SongModel song = (SongModel) parent.getItemAtPosition(position);
+                final SongModel song = (SongModel) parent.getItemAtPosition(position);
                 player.playSong(song.getPath());
                 break;
 
@@ -123,10 +129,58 @@ public class AppEventHandler implements View.OnClickListener,
                 break;
 
             case R.id.contextMenuItem:
-                presenter.setupAddToPlaylistPopupWindow(player.getAllUserPlaylists());
-                presenter.getAddToPlaylistCurrentPlayListsListView().setOnItemClickListener(this);
-                presenter.showAddToPlaylistPopupWindow();
-                presenter.hideSongOptions();
+                String contextOption = (String) parent.getItemAtPosition(position);
+
+                switch (contextOption) {
+                    case "Add To Playlist":
+                        presenter.setupAddToPlaylistPopupWindow(player.getAllUserPlaylists());
+                        presenter.getAddToPlaylistCurrentPlayListsListView().setOnItemClickListener(this);
+                        presenter.showAddToPlaylistPopupWindow();
+                        presenter.hideSongOptions();
+                        break;
+                    case "Delete":
+                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which) {
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        SongsDao songsDao = new SongsDao(context);
+                                        songsDao.deleteSong(selectedSong);
+                                        File file = new File(selectedSong.getPath());
+                                        file.delete();
+                                        context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
+                                        player.updatePlaylist();
+                                        List<SongModel> playlist = player.getPlaylist();
+                                        presenter.updatePlaylist(playlist);
+                                        presenter.hideSongOptions();
+                                        break;
+
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        break;
+                                }
+                            }
+                        };
+
+                        new AlertDialog.Builder(context)
+                                .setMessage("Are you sure you want to delete " +
+                                        selectedSong.getTitle() + " ?")
+                                .setPositiveButton("Yes", dialogClickListener)
+                                .setNegativeButton("No", dialogClickListener)
+                                .show();
+
+
+                        break;
+                    case "Blacklist":
+                        SongsDao songsDao = new SongsDao(context);
+                        songsDao.setSongBlacklist(selectedSong, 1);
+                        player.updatePlaylist();
+                        List<SongModel> playlist = player.getPlaylist();
+                        presenter.updatePlaylist(playlist);
+                        presenter.hideSongOptions();
+                        break;
+                }
+
+
                 break;
 
             case R.id.addToPlaylistItem:
