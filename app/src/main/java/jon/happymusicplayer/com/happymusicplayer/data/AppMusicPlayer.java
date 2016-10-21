@@ -269,7 +269,11 @@ public class AppMusicPlayer extends MediaPlayer {
         this.repeatState = repeatState;
     }
 
-    public void updatePlaylist() {
-        setPlaylist(playlistName);
+    public void removeSongFromPlaylist(SongModel song) {
+        for (SongModel s : playlist) {
+            if (s.getId() == song.getId()) {
+                playlist.remove(s);
+            }
+        }
     }
 }

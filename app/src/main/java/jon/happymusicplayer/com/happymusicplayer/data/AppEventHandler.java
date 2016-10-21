@@ -7,6 +7,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
@@ -59,10 +60,12 @@ public class AppEventHandler implements View.OnClickListener,
                 presenter.updatePlayButton(player.isPlaying());
                 presenter.toggleTrackBarUpdate(player.isPlaying());
                 break;
+
             case R.id.btnBackward:
                 songIndex = player.playPrevSong();
                 presenter.highlightSelectedPlaylistItem(songIndex);
                 break;
+
             case R.id.btnForward:
                 songIndex = player.playNextSong();
                 presenter.highlightSelectedPlaylistItem(songIndex);
@@ -87,29 +90,33 @@ public class AppEventHandler implements View.OnClickListener,
                 presenter.hideCreateNewPlaylistPopupWindow();
                 break;
 
-            case R.id.actionSort:
-                presenter.setupSortPopupView();
-                presenter.getSortListView().setOnItemClickListener(this);
-                presenter.showSortPopupView();
+            case R.id.actionFilterByFolder:
+                SongsDao songsDao = new SongsDao(context);
+                List<String> folders = songsDao.getAllFolders();
+                ArrayAdapter adapter = new ArrayAdapter<>(context, R.layout.filter_folder_item, folders);
+                presenter.getCurrentPlaylistListView().setAdapter(adapter);
                 break;
 
             case R.id.actionFilterByArtist:
-                SongsDao songsDao = new SongsDao(context);
+                songsDao = new SongsDao(context);
+                List<String> artists = songsDao.getAllArtists();
+                adapter = new ArrayAdapter<>(context, R.layout.filter_artist_item, artists);
+                presenter.getCurrentPlaylistListView().setAdapter(adapter);
                 break;
 
             case R.id.actionFilterByAlbum:
+                songsDao = new SongsDao(context);
+                List<String> albums = songsDao.getAllAlbums();
+                adapter = new ArrayAdapter<>(context, R.layout.filter_album_item, albums);
+                presenter.getCurrentPlaylistListView().setAdapter(adapter);
+                break;
+
+            case R.id.actionMenu:
+                presenter.setupActionMenuPopupWindow();
+                presenter.getActionMenuPopupWubdiw().setOnItemClickListener(this);
+                presenter.showActionMenu(v);
                 break;
         }
-    }
-
-
-    @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        presenter.setupSongContextOptionsPopupWindow();
-        presenter.getSongOptions().setOnItemClickListener(this);
-        presenter.showSongOptions(view);
-        selectedSong = (SongModel) parent.getItemAtPosition(position);
-        return true;
     }
 
     @Override
@@ -141,12 +148,21 @@ public class AppEventHandler implements View.OnClickListener,
 
                 switch (contextOption) {
                     case "Add To Playlist":
+                        presenter.hideSongOptions();
                         presenter.setupAddToPlaylistPopupWindow(player.getAllUserPlaylists());
                         presenter.getAddToPlaylistCurrentPlayListsListView().setOnItemClickListener(this);
                         presenter.showAddToPlaylistPopupWindow();
-                        presenter.hideSongOptions();
                         break;
+
+                    case "Sort":
+                        presenter.setupSortPopupView();
+                        presenter.getSortListView().setOnItemClickListener(this);
+                        presenter.showSortPopupView();
+                        presenter.hideActionMenu();
+                        break;
+
                     case "Delete":
+                        presenter.hideSongOptions();
                         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -157,10 +173,9 @@ public class AppEventHandler implements View.OnClickListener,
                                         File file = new File(selectedSong.getPath());
                                         file.delete();
                                         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
-                                        player.updatePlaylist();
+                                        player.removeSongFromPlaylist(selectedSong);
                                         List<SongModel> playlist = player.getPlaylist();
                                         presenter.updatePlaylist(playlist);
-                                        presenter.hideSongOptions();
                                         break;
 
                                     case DialogInterface.BUTTON_NEGATIVE:
@@ -175,16 +190,15 @@ public class AppEventHandler implements View.OnClickListener,
                                 .setPositiveButton("Yes", dialogClickListener)
                                 .setNegativeButton("No", dialogClickListener)
                                 .show();
-
-
                         break;
+
                     case "Blacklist":
+                        presenter.hideSongOptions();
                         SongsDao songsDao = new SongsDao(context);
                         songsDao.setSongBlacklist(selectedSong, 1);
-                        player.updatePlaylist();
+                        player.removeSongFromPlaylist(selectedSong);
                         List<SongModel> playlist = player.getPlaylist();
                         presenter.updatePlaylist(playlist);
-                        presenter.hideSongOptions();
                         break;
                 }
 
@@ -211,7 +225,45 @@ public class AppEventHandler implements View.OnClickListener,
                 presenter.hideSortPopupView();
                 break;
 
+            case R.id.filterByArtistItem:
+                songsDao = new SongsDao(context);
+                String artist = (String) parent.getItemAtPosition(position);
+                playlist = songsDao.getAllByArtist(artist);
+                player.setPlaylist(playlist);
+                presenter.updatePlaylist(playlist);
+                break;
+
+            case R.id.filterByAlbumItem:
+                songsDao = new SongsDao(context);
+                String album = (String) parent.getItemAtPosition(position);
+                playlist = songsDao.getAllByAlbum(album);
+                player.setPlaylist(playlist);
+                presenter.updatePlaylist(playlist);
+                break;
+
+            case R.id.filterByFolderItem:
+                songsDao = new SongsDao(context);
+                String folder = (String) parent.getItemAtPosition(position);
+                playlist = songsDao.getAllByFolder(folder);
+                player.setPlaylist(playlist);
+                presenter.updatePlaylist(playlist);
+                break;
         }
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+        switch (view.getId()) {
+            case R.id.currentPlaylistItem:
+                presenter.setupSongContextOptionsPopupWindow();
+                presenter.getSongOptions().setOnItemClickListener(this);
+                presenter.showSongOptions(view);
+                selectedSong = (SongModel) parent.getItemAtPosition(position);
+                break;
+
+        }
+        return true;
     }
 
     @Override
@@ -246,10 +298,6 @@ public class AppEventHandler implements View.OnClickListener,
 
     @Override
     public void onDrawerSlide(View drawerView, float slideOffset) {
-        LayoutAnimationController animation =
-                new LayoutAnimationController(AnimationUtils.loadAnimation(context, R.anim.table_row_appear), 1f);
-        presenter.getDrawerPlaylistListView().setLayoutAnimation(animation);
-        presenter.getDrawerPlaylistListView().clearAnimation();
     }
 
     @Override
@@ -334,7 +382,6 @@ public class AppEventHandler implements View.OnClickListener,
             default:
                 return SongsContract.SongsEntry.TITLE;
         }
-
     }
 
 

@@ -2,28 +2,31 @@ package jon.happymusicplayer.com.happymusicplayer.Activities;
 
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Point;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Toast;
+
+import java.util.List;
 
 import jon.happymusicplayer.com.happymusicplayer.R;
 import jon.happymusicplayer.com.happymusicplayer.data.AppEventHandler;
 import jon.happymusicplayer.com.happymusicplayer.data.AppMusicPlayer;
 import jon.happymusicplayer.com.happymusicplayer.data.Presenter;
 import jon.happymusicplayer.com.happymusicplayer.data.managers.SettingsManager;
+import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 import jon.happymusicplayer.com.happymusicplayer.tasks.UpdateAllSongsPlayListTask;
 import jon.happymusicplayer.com.happymusicplayer.tasks.UpdateProgressBarTask;
+import jon.happymusicplayer.com.happymusicplayer.utils.Utilities;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -36,12 +39,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
-
         presenter = new Presenter(this);
         player = new AppMusicPlayer(this);
         eventHandler = new AppEventHandler(this, presenter, player);
-        init();
 
     }
 
@@ -58,40 +58,41 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setDisplayShowCustomEnabled(true);
             actionBar.setCustomView(R.layout.action_bar_view);
         }
+        presenter.init(getWindowManager().getDefaultDisplay(), getResources().getConfiguration().orientation);
+        init();
 
-        presenter.setupSearchView();
-        presenter.getSearchView().setOnQueryTextListener(eventHandler);
-
-        presenter.setupSortButton();
-        presenter.getSortButton().setOnClickListener(eventHandler);
-
-        presenter.setupAlbumButton();
-        presenter.setupArtistButton();
-
-        presenter.layoutSettings(
-                getWindowManager().getDefaultDisplay(),
-                getResources().getConfiguration().orientation
-        );
         return true;
     }
 
     @Override
     public void onConfigurationChanged(Configuration config) {
         super.onConfigurationChanged(config);
+        ListAdapter adapter = presenter.getCurrentPlaylistListView().getAdapter();
+        presenter.init(getWindowManager().getDefaultDisplay(), config.orientation);
+        presenter.updateDrawerPlaylist(player.getAllPlayLists());
+        presenter.getCurrentPlaylistListView().setAdapter(adapter);
+        presenter.updateRepeatButton(player.getRepeatState());
+        presenter.updateShuffleButton(player.getIsShuffle());
+        presenter.updatePlayButton(player.isPlaying());
 
-        presenter.layoutSettings(
-                getWindowManager().getDefaultDisplay(),
-                config.orientation
+        if(player.getSong() != null)
+        presenter.updateSongDetails(
+                player.getSong().getTitle(),
+                Utilities.getDurationAsText(player.getCurrentPosition(), player.getDuration())
         );
 
-
+        setupEventHandlers();
     }
 
     private void init() {
         logPhoneDetails();
         setupEventHandlers();
         loadUserSettings();
-        loadDisplay();
+        presenter.updatePlaylist(player.getPlaylist());
+        presenter.updateDrawerPlaylist(player.getAllPlayLists());
+        presenter.updateRepeatButton(player.getRepeatState());
+        presenter.updateShuffleButton(player.getIsShuffle());
+        presenter.setTrackBarUpdateTask(new UpdateProgressBarTask(player, presenter));
         SettingsManager.setContext(this);
 
         new UpdateAllSongsPlayListTask(this, eventHandler).execute();
@@ -100,14 +101,6 @@ public class MainActivity extends AppCompatActivity {
     private void logPhoneDetails() {
         String version = android.os.Build.VERSION.RELEASE;
         Log.i("Android Version: ", version);
-    }
-
-    private void loadDisplay() {
-        presenter.updatePlaylist(player.getPlaylist());
-        presenter.updateDrawerPlaylist(player.getAllPlayLists());
-        presenter.updateRepeatButton(player.getRepeatState());
-        presenter.updateShuffleButton(player.getIsShuffle());
-        presenter.setTrackBarUpdateTask(new UpdateProgressBarTask(player, presenter));
     }
 
     private void setupEventHandlers() {
@@ -121,7 +114,11 @@ public class MainActivity extends AppCompatActivity {
         ((ListView) findViewById(R.id.lvDrawerPlaylist)).setOnItemClickListener(eventHandler);
         ((ListView) findViewById(R.id.lvDrawerPlaylist)).setOnItemLongClickListener(eventHandler);
         ((SeekBar) findViewById(R.id.sbTrackProgressBar)).setOnSeekBarChangeListener(eventHandler);
-
+        presenter.getSearchView().setOnQueryTextListener(eventHandler);
+        presenter.getSortButton().setOnClickListener(eventHandler);
+        presenter.getAlbumButton().setOnClickListener(eventHandler);
+        presenter.getArtistButton().setOnClickListener(eventHandler);
+        presenter.getActionMenuButton().setOnClickListener(eventHandler);
         presenter.getDrawerLayout().addDrawerListener(eventHandler);
 
         player.setOnCompletionListener(eventHandler);

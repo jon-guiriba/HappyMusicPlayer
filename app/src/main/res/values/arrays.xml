@@ -19,6 +19,11 @@
         <item>Blacklist</item>
     </string-array>
 
+    <string-array name="action_menu">
+        <item>Sort</item>
+        <item>Settings</item>
+    </string-array>
+
     <string-array name="sort_options">
         <item>Title</item>
         <item>Artist</item>

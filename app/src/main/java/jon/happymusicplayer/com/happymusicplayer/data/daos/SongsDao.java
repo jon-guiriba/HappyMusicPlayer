@@ -174,6 +174,136 @@ public class SongsDao {
         return songsList;
     }
 
+    public List<String> getAllArtists() {
+        Cursor cursor = db.query(
+                SongsContract.SongsEntry.TABLE_NAME,
+                new String[]{SongsContract.SongsEntry.ARTIST},
+                null,
+                null,
+                SongsContract.SongsEntry.ARTIST,
+                null,
+                null
+        );
+
+        List<String> artists = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            artists.add(cursor.getString(0));
+        }
+
+        cursor.close();
+
+        return artists;
+    }
+
+    public List<SongModel> getAllByArtist(String artist) {
+        Cursor cursor = db.query(
+                SongsContract.SongsEntry.TABLE_NAME,
+                SongsContract.SongsEntry.ALL,
+                SongsContract.SongsEntry.ARTIST + "=?",
+                new String[]{artist},
+                null,
+                null,
+                null
+        );
+
+        List<SongModel> songsList = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            songsList.add(getSongModel(cursor));
+        }
+
+        cursor.close();
+
+        return songsList;
+    }
+
+    public List<SongModel> getAllByAlbum(String album) {
+        Cursor cursor = db.query(
+                SongsContract.SongsEntry.TABLE_NAME,
+                SongsContract.SongsEntry.ALL,
+                SongsContract.SongsEntry.ALBUM + "=?",
+                new String[]{album},
+                null,
+                null,
+                null
+        );
+
+        List<SongModel> songsList = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            songsList.add(getSongModel(cursor));
+        }
+
+        cursor.close();
+
+        return songsList;
+    }
+
+
+    public List<SongModel> getAllByFolder(String folder) {
+        Cursor cursor = db.query(
+                SongsContract.SongsEntry.TABLE_NAME,
+                SongsContract.SongsEntry.ALL,
+                SongsContract.SongsEntry.PATH + " LIKE ?",
+                new String[]{folder+"%"},
+                null,
+                null,
+                null
+        );
+
+        List<SongModel> songsList = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            songsList.add(getSongModel(cursor));
+        }
+
+        cursor.close();
+
+        return songsList;
+    }
+
+    public List<String> getAllAlbums() {
+        Cursor cursor = db.query(
+                SongsContract.SongsEntry.TABLE_NAME,
+                new String[]{SongsContract.SongsEntry.ALBUM},
+                null,
+                null,
+                SongsContract.SongsEntry.ALBUM,
+                null,
+                null
+        );
+
+        List<String> albums = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            albums.add(cursor.getString(0));
+        }
+
+        cursor.close();
+
+        return albums;
+    }
+
+
+    public List<String> getAllFolders() {
+        String query =
+                "       SELECT      REPLACE(path, '/' || title , '') as folderPath " +
+                        "       FROM        songs " +
+                        "       GROUP BY    folderPath ";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        List<String> folders = new ArrayList<>();
+
+        while (cursor.moveToNext()) {
+            folders.add(cursor.getString(0));
+        }
+        cursor.close();
+
+        return folders;
+    }
+
     public void addSong(String title, String artist, String album, int duration, String path) {
         ContentValues cv = new ContentValues();
         cv.put(SongsContract.SongsEntry.TITLE, title);
@@ -237,4 +367,5 @@ public class SongsDao {
                 new String[]{"" + song.getId()}
         );
     }
+
 }

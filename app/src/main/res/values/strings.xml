@@ -14,4 +14,5 @@
     <string name="sort_by">Sort By</string>
     <string name="songDurationPlaceHolder">- - : - - / - - : - -</string>
     <string name="playlists">Playlists</string>
+    <string name="settings">Settings</string>
 </resources>

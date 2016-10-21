@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -38,7 +39,6 @@ import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 
 public class Presenter {
 
-    private final LinearLayout trackProgressLayout;
     Context context;
     private static final int SONG_PROGRESS_BAR_REFRESH_RATE = 40;
 
@@ -50,6 +50,7 @@ public class Presenter {
     private ImageButton btnSort;
     private ImageButton btnArtist;
     private ImageButton btnAlbum;
+    private ImageButton btnActionMenu;
     private Button btnSubmitAddNewPlaylist;
     private ListView lvCurrentPlaylist;
     private ListView lvDrawerPlaylist;
@@ -60,23 +61,35 @@ public class Presenter {
     private SearchView searchView;
     private SeekBar sbSongProgressBar;
     private ListPopupWindow songOptions;
+    private ListPopupWindow actionMenu;
     private PopupWindow addToPlaylistPopupWindow;
     private PopupWindow createNewPlaylistPopupWindow;
     private PopupWindow sleepTimerPopupWindow;
+    private PopupWindow sortPopupWindow;
     private Handler songProgressBarHandler = new Handler();
     private boolean isPlayerPrepared = false;
     private int trackProgress = 0;
     private DrawerLayout drawerLayout;
-
+    private LinearLayout trackProgressLayout;
+    private RelativeLayout playerControlsLayout;
     private Runnable trackBarUpdateTask;
     private ArrayAdapter<SongModel> currentPlaylistAdapter;
     private ListView lvNumberPickerHours;
-    private PopupWindow sortPopupWindow;
     private ListView lvSortOptions;
 
     public Presenter(Context context) {
         this.context = context;
+    }
 
+    public void init(Display display, int orientation) {
+        switch (orientation) {
+            case Configuration.ORIENTATION_LANDSCAPE:
+                ((Activity) context).setContentView(R.layout.activity_main_land);
+                break;
+            case Configuration.ORIENTATION_PORTRAIT:
+                ((Activity) context).setContentView(R.layout.activity_main_port);
+                break;
+        }
         btnPlay = (ImageButton) ((Activity) context).findViewById(R.id.btnPlay);
         btnForward = (ImageButton) ((Activity) context).findViewById(R.id.btnForward);
         btnBackward = (ImageButton) ((Activity) context).findViewById(R.id.btnBackward);
@@ -89,11 +102,16 @@ public class Presenter {
         tvSongDuration = (TextView) ((Activity) context).findViewById(R.id.tvSongDuration);
         sbSongProgressBar = (SeekBar) ((Activity) context).findViewById(R.id.sbTrackProgressBar);
         drawerLayout = (DrawerLayout) ((Activity) context).findViewById(R.id.drawerLayout);
+        playerControlsLayout = (RelativeLayout) ((Activity) context).findViewById(R.id.playerControlsLayout);
         trackProgressLayout = (LinearLayout) ((Activity) context).findViewById(R.id.trackProgressLayout);
-        init();
-    }
+        searchView = (SearchView) ((Activity) context).findViewById(R.id.actionSearch);
+        btnSort = (ImageButton) ((Activity) context).findViewById(R.id.actionFilterByFolder);
+        btnArtist = (ImageButton) ((Activity) context).findViewById(R.id.actionFilterByArtist);
+        btnAlbum = (ImageButton) ((Activity) context).findViewById(R.id.actionFilterByAlbum);
+        btnActionMenu = (ImageButton) ((Activity) context).findViewById(R.id.actionMenu);
 
-    private void init() {
+        removeSearchIcon();
+
         sbSongProgressBar.setMax(100);
         lvCurrentPlaylist.setTextFilterEnabled(false);
         drawerLayout.setScrimColor(Color.TRANSPARENT);
@@ -340,18 +358,8 @@ public class Presenter {
         magImage.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
     }
 
-    public void setupSearchView() {
-        searchView = (SearchView) ((Activity) context).findViewById(R.id.actionSearch);
-        removeSearchIcon();
-    }
 
-    public void setupArtistButton() {
-        btnArtist = (ImageButton) ((Activity) context).findViewById(R.id.actionFilterByArtist);
-    }
 
-    public void setupAlbumButton() {
-        btnAlbum = (ImageButton) ((Activity) context).findViewById(R.id.actionFilterByAlbum);
-    }
 
     public void setupSortPopupView() {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -385,8 +393,9 @@ public class Presenter {
         sortPopupWindow.dismiss();
     }
 
-    public void setupSortButton() {
-        btnSort = (ImageButton) ((Activity) context).findViewById(R.id.actionSort);
+
+    public ImageButton getActionMenuButton() {
+        return btnActionMenu;
     }
 
     public ImageButton getSortButton() {
@@ -429,73 +438,27 @@ public class Presenter {
         return btnRepeat;
     }
 
-    public void layoutSettings(Display display, int orientation) {
 
-        switch (orientation) {
-            case Configuration.ORIENTATION_LANDSCAPE:
-                Point size = new Point();
-                display.getSize(size);
-                int actionbarMarginRight = new Double(size.x * 0.15).intValue();
-                int playerControlsMargin = new Double(size.x * 0.08).intValue();
+    public void setupActionMenuPopupWindow() {
+        actionMenu = new ListPopupWindow(context);
+        actionMenu.setAdapter(new ArrayAdapter<>(context, R.layout.context_menu_item, context.getResources().getTextArray(R.array.action_menu)));
+        actionMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(context, R.color.colorPrimary)));
+        actionMenu.setWidth(250);
+        actionMenu.setModal(true);
+    }
 
-                ((ViewGroup.MarginLayoutParams) btnSort.
-                        getLayoutParams()).rightMargin = actionbarMarginRight;
+    public void showActionMenu(View view) {
+        actionMenu.setAnchorView(view);
+        actionMenu.setVerticalOffset(-2);
+        actionMenu.setHorizontalOffset(0);
+        actionMenu.show();
+    }
 
-                ((ViewGroup.MarginLayoutParams) btnArtist.
-                        getLayoutParams()).rightMargin = actionbarMarginRight;
+    public void hideActionMenu() {
+        actionMenu.dismiss();
+    }
 
-                ((ViewGroup.MarginLayoutParams) btnAlbum.
-                        getLayoutParams()).rightMargin = actionbarMarginRight - 30;
-
-                ((ViewGroup.MarginLayoutParams) btnShuffle.
-                        getLayoutParams()).rightMargin = playerControlsMargin;
-
-                ((ViewGroup.MarginLayoutParams) btnShuffle.
-                        getLayoutParams()).leftMargin = playerControlsMargin;
-
-                ((ViewGroup.MarginLayoutParams) btnBackward.
-                        getLayoutParams()).rightMargin = playerControlsMargin;
-
-                ((ViewGroup.MarginLayoutParams) btnPlay.
-                        getLayoutParams()).rightMargin = playerControlsMargin;
-
-                ((ViewGroup.MarginLayoutParams) btnForward.
-                        getLayoutParams()).rightMargin = playerControlsMargin;
-
-                ((ViewGroup.MarginLayoutParams) btnRepeat.
-                        getLayoutParams()).rightMargin = playerControlsMargin;
-                break;
-            case Configuration.ORIENTATION_PORTRAIT:
-                ((ViewGroup.MarginLayoutParams) btnSort.
-                        getLayoutParams()).rightMargin = 0;
-
-                ((ViewGroup.MarginLayoutParams) btnArtist.
-                        getLayoutParams()).rightMargin = 0;
-
-                ((ViewGroup.MarginLayoutParams) btnAlbum.
-                        getLayoutParams()).rightMargin = 0;
-
-                ((ViewGroup.MarginLayoutParams) btnShuffle.
-                        getLayoutParams()).rightMargin = 0;
-
-                ((ViewGroup.MarginLayoutParams) btnShuffle.
-                        getLayoutParams()).leftMargin = 0;
-
-                ((ViewGroup.MarginLayoutParams) btnBackward.
-                        getLayoutParams()).rightMargin = 0;
-
-                ((ViewGroup.MarginLayoutParams) btnPlay.
-                        getLayoutParams()).rightMargin = 0;
-
-                ((ViewGroup.MarginLayoutParams) btnForward.
-                        getLayoutParams()).rightMargin = 0;
-
-                ((ViewGroup.MarginLayoutParams) btnRepeat.
-                        getLayoutParams()).rightMargin = 0;
-                break;
-
-        }
-
-
+    public ListPopupWindow getActionMenuPopupWubdiw() {
+        return actionMenu;
     }
 }

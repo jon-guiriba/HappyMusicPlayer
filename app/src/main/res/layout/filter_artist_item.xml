@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/filterByArtistItem"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/current_playlist_item_bg"
+        android:ellipsize="end"
+        android:maxLines="3"
+        android:paddingBottom="5dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="5dp"
+        android:gravity="center_vertical"
+        android:textSize="17sp"
+        android:drawableEnd="@drawable/img_artist"
+    />
+
