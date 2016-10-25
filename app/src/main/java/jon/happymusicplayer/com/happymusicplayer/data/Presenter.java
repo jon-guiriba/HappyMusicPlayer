@@ -27,6 +27,7 @@ import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -76,6 +77,7 @@ public class Presenter {
     private ArrayAdapter<SongModel> currentPlaylistAdapter;
     private ListView lvNumberPickerHours;
     private ListView lvSortOptions;
+    private Toast toast;
 
     public Presenter(Context context) {
         this.context = context;
@@ -109,12 +111,21 @@ public class Presenter {
         btnArtist = (ImageButton) ((Activity) context).findViewById(R.id.actionFilterByArtist);
         btnAlbum = (ImageButton) ((Activity) context).findViewById(R.id.actionFilterByAlbum);
         btnActionMenu = (ImageButton) ((Activity) context).findViewById(R.id.actionMenu);
-
         removeSearchIcon();
 
         sbSongProgressBar.setMax(100);
         lvCurrentPlaylist.setTextFilterEnabled(false);
         drawerLayout.setScrimColor(Color.TRANSPARENT);
+
+        setupScrollText();
+
+    }
+
+    private void setupScrollText() {
+        toast = new Toast(context);
+        View view = ((Activity) context).getLayoutInflater().inflate(R.layout.scroll_textview,
+                (ViewGroup) ((Activity) context).findViewById(R.id.lrScrollTextRoot));
+        toast.setView(view);
     }
 
     public void setupSongContextOptionsPopupWindow() {
@@ -359,8 +370,6 @@ public class Presenter {
     }
 
 
-
-
     public void setupSortPopupView() {
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View popupLayout = layoutInflater.inflate(R.layout.popup_sort, null, false);
@@ -460,5 +469,9 @@ public class Presenter {
 
     public ListPopupWindow getActionMenuPopupWubdiw() {
         return actionMenu;
+    }
+
+    public Toast getScrollTextToast() {
+        return toast;
     }
 }

@@ -24,6 +24,7 @@
             android:background="@color/colorPrimary"
             android:choiceMode="singleChoice"
             android:listSelector="@drawable/current_playlist_item_bg"
+
             android:layout_alignParentTop="true" />
 
         <RelativeLayout

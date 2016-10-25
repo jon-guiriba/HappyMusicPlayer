@@ -1,20 +1,29 @@
 package jon.happymusicplayer.com.happymusicplayer.data;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,7 +47,7 @@ import jon.happymusicplayer.com.happymusicplayer.utils.Utilities;
 public class AppEventHandler implements View.OnClickListener,
         AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener,
         SeekBar.OnSeekBarChangeListener, OnTaskCompleted, SearchView.OnQueryTextListener,
-        MediaPlayer.OnPreparedListener, DrawerLayout.DrawerListener, MediaPlayer.OnCompletionListener {
+        MediaPlayer.OnPreparedListener, DrawerLayout.DrawerListener, MediaPlayer.OnCompletionListener, AbsListView.OnScrollListener {
 
     private final AppMusicPlayer player;
     private final Context context;
@@ -363,9 +372,11 @@ public class AppEventHandler implements View.OnClickListener,
     public void onTaskCompleted() {
         SongsDao songsDao = new SongsDao(context);
         List<SongModel> playList = songsDao.getAllByPlayList(1);
-        if (player.getPlaylist() == null)
+        if (player.getPlaylist() == null){
             player.setPlaylist(playList);
-        presenter.updatePlaylist(playList);
+            presenter.updatePlaylist(playList);
+        }
+
     }
 
 
@@ -384,5 +395,42 @@ public class AppEventHandler implements View.OnClickListener,
         }
     }
 
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        switch (scrollState) {
+            case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
+//                presenter.getScrollTextToast().cancel();
+                break;
+
+            case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
+//                presenter.getScrollTextToast().show();
+                break;
+            case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
+
+                break;
+
+
+        }
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        switch (view.getId()) {
+            case R.id.lvCurrentPlayList:
+//                SongModel song = (SongModel) presenter.getCurrentPlaylistListView().getItemAtPosition(firstVisibleItem);
+//                if (song == null) return;
+//                String scrollText = "" + song.getTitle().charAt(0);
+//                int scrolly =  presenter.getCurrentPlaylistListView().getFirstVisiblePosition() +
+//                        (int)(presenter.getCurrentPlaylistListView().getHeight() * 0.2);
+//
+//                ((TextView)presenter.getScrollTextToast().getView().findViewById(R.id.tvScrollText))
+//                        .setText(scrollText);
+//                presenter.getScrollTextToast().setDuration(Toast.LENGTH_SHORT);
+//                Log.i("Scroll" , ""+scrolly);
+//                presenter.getScrollTextToast().setGravity(Gravity.TOP | Gravity.END, 15, 0 + scrolly);
+//                presenter.getScrollTextToast().show();
+                break;
+        }
+    }
 
 }

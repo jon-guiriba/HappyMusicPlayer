@@ -122,6 +122,8 @@ public class SongsDao {
 
     public List<SongModel> getAllByPlayList(int playListId, String orderBy) {
 
+
+
         String query = "SELECT      s.*" +
                 "       FROM        " + PlaylistItemsContract.PlaylistItemsEntry.TABLE_NAME + " pi" +
                 "                   INNER JOIN " + PlaylistsContract.PlaylistsEntry.TABLE_NAME + " p ON p.id = pi.playlist_id" +

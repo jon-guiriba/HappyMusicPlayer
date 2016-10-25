@@ -10,21 +10,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Toast;
-
-import java.util.List;
 
 import jon.happymusicplayer.com.happymusicplayer.R;
 import jon.happymusicplayer.com.happymusicplayer.data.AppEventHandler;
 import jon.happymusicplayer.com.happymusicplayer.data.AppMusicPlayer;
 import jon.happymusicplayer.com.happymusicplayer.data.Presenter;
 import jon.happymusicplayer.com.happymusicplayer.data.managers.SettingsManager;
-import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
-import jon.happymusicplayer.com.happymusicplayer.tasks.UpdateAllSongsPlayListTask;
+import jon.happymusicplayer.com.happymusicplayer.tasks.UpdateSongDataTask;
 import jon.happymusicplayer.com.happymusicplayer.tasks.UpdateProgressBarTask;
 import jon.happymusicplayer.com.happymusicplayer.utils.Utilities;
 
@@ -68,12 +64,15 @@ public class MainActivity extends AppCompatActivity {
     public void onConfigurationChanged(Configuration config) {
         super.onConfigurationChanged(config);
         ListAdapter adapter = presenter.getCurrentPlaylistListView().getAdapter();
+        int position = presenter.getCurrentPlaylistListView().getFirstVisiblePosition();
         presenter.init(getWindowManager().getDefaultDisplay(), config.orientation);
         presenter.updateDrawerPlaylist(player.getAllPlayLists());
         presenter.getCurrentPlaylistListView().setAdapter(adapter);
+        presenter.getCurrentPlaylistListView().setSelection(position);
         presenter.updateRepeatButton(player.getRepeatState());
         presenter.updateShuffleButton(player.getIsShuffle());
         presenter.updatePlayButton(player.isPlaying());
+
 
         if(player.getSong() != null)
         presenter.updateSongDetails(
@@ -95,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         presenter.setTrackBarUpdateTask(new UpdateProgressBarTask(player, presenter));
         SettingsManager.setContext(this);
 
-        new UpdateAllSongsPlayListTask(this, eventHandler).execute();
+        new UpdateSongDataTask(this, eventHandler).execute();
     }
 
     private void logPhoneDetails() {
@@ -120,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         presenter.getArtistButton().setOnClickListener(eventHandler);
         presenter.getActionMenuButton().setOnClickListener(eventHandler);
         presenter.getDrawerLayout().addDrawerListener(eventHandler);
-
+        presenter.getCurrentPlaylistListView().setOnScrollListener(eventHandler);
         player.setOnCompletionListener(eventHandler);
         player.setOnPreparedListener(eventHandler);
     }
@@ -160,4 +159,9 @@ public class MainActivity extends AppCompatActivity {
         }, 2000);
     }
 
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        new UpdateSongDataTask(this, eventHandler).execute();
+    }
 }

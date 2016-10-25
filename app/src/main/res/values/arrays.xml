@@ -21,6 +21,7 @@
 
     <string-array name="action_menu">
         <item>Sort</item>
+        <item>Source Folders</item>
         <item>Settings</item>
     </string-array>
 
