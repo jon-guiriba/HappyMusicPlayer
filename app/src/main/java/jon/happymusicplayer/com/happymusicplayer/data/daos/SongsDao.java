@@ -54,7 +54,6 @@ public class SongsDao {
         return song;
     }
 
-
     public SongModel getSingleByPathAndPlayList(String path, int playListId) {
 
         String query = "SELECT  s.*" +
@@ -121,9 +120,6 @@ public class SongsDao {
     }
 
     public List<SongModel> getAllByPlayList(int playListId, String orderBy) {
-
-
-
         String query = "SELECT      s.*" +
                 "       FROM        " + PlaylistItemsContract.PlaylistItemsEntry.TABLE_NAME + " pi" +
                 "                   INNER JOIN " + PlaylistsContract.PlaylistsEntry.TABLE_NAME + " p ON p.id = pi.playlist_id" +
@@ -242,7 +238,6 @@ public class SongsDao {
         return songsList;
     }
 
-
     public List<SongModel> getAllByFolder(String folder) {
         Cursor cursor = db.query(
                 SongsContract.SongsEntry.TABLE_NAME,
@@ -287,7 +282,6 @@ public class SongsDao {
         return albums;
     }
 
-
     public List<String> getAllFolders() {
         String query =
                 "       SELECT      REPLACE(path, '/' || title , '') as folderPath " +
@@ -316,7 +310,6 @@ public class SongsDao {
         db.insertWithOnConflict(SongsContract.SongsEntry.TABLE_NAME, null, cv, SQLiteDatabase.CONFLICT_IGNORE);
     }
 
-
     private SongModel getSongModel(Cursor cursor) {
         int id = cursor.getInt(cursor.getColumnIndex(SongsContract.SongsEntry.ID));
         String title = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.TITLE));
@@ -335,7 +328,6 @@ public class SongsDao {
 
         return new SongModel(id, title, artist, album, duration, date, path);
     }
-
 
     public void deleteSong(SongModel song) {
         deleteSongFromPlaylistItems(song);
