@@ -169,8 +169,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/colorPrimary"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="match_parent"
@@ -184,13 +183,13 @@
         <ListView
             android:id="@+id/lvFilters"
             android:layout_width="match_parent"
-            android:layout_height="170dp"
+            android:layout_height="150dp"
             android:choiceMode="singleChoice"
             android:layout_marginBottom="0dp"
             />
 
         <TextView
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="6dp"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:gravity="center"
