@@ -1,29 +1,18 @@
 package jon.happymusicplayer.com.happymusicplayer.data;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.SearchView;
 import android.widget.SeekBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -99,31 +88,16 @@ public class AppEventHandler implements View.OnClickListener,
                 presenter.hideCreateNewPlaylistPopupWindow();
                 break;
 
-            case R.id.actionFilterByFolder:
-                SongsDao songsDao = new SongsDao(context);
-                List<String> folders = songsDao.getAllFolders();
-                ArrayAdapter adapter = new ArrayAdapter<>(context, R.layout.filter_folder_item, folders);
-                presenter.getCurrentPlaylistListView().setAdapter(adapter);
-                break;
-
-            case R.id.actionFilterByArtist:
-                songsDao = new SongsDao(context);
-                List<String> artists = songsDao.getAllArtists();
-                adapter = new ArrayAdapter<>(context, R.layout.filter_artist_item, artists);
-                presenter.getCurrentPlaylistListView().setAdapter(adapter);
-                break;
-
-            case R.id.actionFilterByAlbum:
-                songsDao = new SongsDao(context);
-                List<String> albums = songsDao.getAllAlbums();
-                adapter = new ArrayAdapter<>(context, R.layout.filter_album_item, albums);
-                presenter.getCurrentPlaylistListView().setAdapter(adapter);
-                break;
-
             case R.id.actionMenu:
                 presenter.setupActionMenuPopupWindow();
                 presenter.getActionMenuPopupWubdiw().setOnItemClickListener(this);
                 presenter.showActionMenu(v);
+                break;
+
+            case R.id.actionSort:
+                presenter.setupSortPopupView();
+                presenter.getSortListView().setOnItemClickListener(this);
+                presenter.showSortPopupView();
                 break;
         }
     }
@@ -149,7 +123,7 @@ public class AppEventHandler implements View.OnClickListener,
                 }
 
                 player.setPlaylist(playListName);
-                presenter.updatePlaylist(player.getPlaylist());
+                presenter.updateCurrentPlaylist(player.getPlaylist());
                 break;
 
             case R.id.contextMenuItem:
@@ -161,13 +135,6 @@ public class AppEventHandler implements View.OnClickListener,
                         presenter.setupAddToPlaylistPopupWindow(player.getAllUserPlaylists());
                         presenter.getAddToPlaylistCurrentPlayListsListView().setOnItemClickListener(this);
                         presenter.showAddToPlaylistPopupWindow();
-                        break;
-
-                    case "Sort":
-                        presenter.setupSortPopupView();
-                        presenter.getSortListView().setOnItemClickListener(this);
-                        presenter.showSortPopupView();
-                        presenter.hideActionMenu();
                         break;
 
                     case "Delete":
@@ -184,7 +151,7 @@ public class AppEventHandler implements View.OnClickListener,
                                         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
                                         player.removeSongFromPlaylist(selectedSong);
                                         List<SongModel> playlist = player.getPlaylist();
-                                        presenter.updatePlaylist(playlist);
+                                        presenter.updateCurrentPlaylist(playlist);
                                         break;
 
                                     case DialogInterface.BUTTON_NEGATIVE:
@@ -207,7 +174,7 @@ public class AppEventHandler implements View.OnClickListener,
                         songsDao.setSongBlacklist(selectedSong, 1);
                         player.removeSongFromPlaylist(selectedSong);
                         List<SongModel> playlist = player.getPlaylist();
-                        presenter.updatePlaylist(playlist);
+                        presenter.updateCurrentPlaylist(playlist);
                         break;
                 }
 
@@ -230,7 +197,7 @@ public class AppEventHandler implements View.OnClickListener,
 
                 List<SongModel> playlist = songsDao.getAllByPlayList(playlistId, getColumnName(position));
                 player.setPlaylist(playlist);
-                presenter.updatePlaylist(playlist);
+                presenter.updateCurrentPlaylist(playlist);
                 presenter.hideSortPopupView();
                 break;
 
@@ -239,7 +206,7 @@ public class AppEventHandler implements View.OnClickListener,
                 String artist = (String) parent.getItemAtPosition(position);
                 playlist = songsDao.getAllByArtist(artist);
                 player.setPlaylist(playlist);
-                presenter.updatePlaylist(playlist);
+                presenter.updateCurrentPlaylist(playlist);
                 break;
 
             case R.id.filterByAlbumItem:
@@ -247,7 +214,7 @@ public class AppEventHandler implements View.OnClickListener,
                 String album = (String) parent.getItemAtPosition(position);
                 playlist = songsDao.getAllByAlbum(album);
                 player.setPlaylist(playlist);
-                presenter.updatePlaylist(playlist);
+                presenter.updateCurrentPlaylist(playlist);
                 break;
 
             case R.id.filterByFolderItem:
@@ -255,7 +222,33 @@ public class AppEventHandler implements View.OnClickListener,
                 String folder = (String) parent.getItemAtPosition(position);
                 playlist = songsDao.getAllByFolder(folder);
                 player.setPlaylist(playlist);
-                presenter.updatePlaylist(playlist);
+                presenter.updateCurrentPlaylist(playlist);
+                break;
+
+            case R.id.filterItem:
+                String filterOption = (String) parent.getItemAtPosition(position);
+                switch (filterOption) {
+                    case "Artists":
+                        songsDao = new SongsDao(context);
+                        List<String> artists = songsDao.getAllArtists();
+                        ArrayAdapter adapter = new ArrayAdapter<>(context, R.layout.filter_artist_item, artists);
+                        presenter.getCurrentPlaylistListView().setAdapter(adapter);
+                        break;
+
+                    case "Albums":
+                        songsDao = new SongsDao(context);
+                        List<String> albums = songsDao.getAllAlbums();
+                        adapter = new ArrayAdapter<>(context, R.layout.filter_album_item, albums);
+                        presenter.getCurrentPlaylistListView().setAdapter(adapter);
+                        break;
+                    case "Folders":
+                        songsDao = new SongsDao(context);
+                        List<String> folders = songsDao.getAllFolders();
+                        adapter = new ArrayAdapter<>(context, R.layout.filter_folder_item, folders);
+                        presenter.getCurrentPlaylistListView().setAdapter(adapter);
+                        break;
+                }
+
                 break;
         }
     }
@@ -344,7 +337,7 @@ public class AppEventHandler implements View.OnClickListener,
         }
 
         player.setPlaylist(newPlaylist);
-        presenter.updatePlaylist(newPlaylist);
+        presenter.updateCurrentPlaylist(newPlaylist);
         return true;
     }
 
@@ -372,9 +365,9 @@ public class AppEventHandler implements View.OnClickListener,
     public void onTaskCompleted() {
         SongsDao songsDao = new SongsDao(context);
         List<SongModel> playList = songsDao.getAllByPlayList(1);
-        if (player.getPlaylist() == null){
+        if (player.getPlaylist() == null) {
             player.setPlaylist(playList);
-            presenter.updatePlaylist(playList);
+            presenter.updateCurrentPlaylist(playList);
         }
 
     }

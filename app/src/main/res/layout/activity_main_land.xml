@@ -169,9 +169,28 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/colorPrimary"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        >
 
         <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="@string/filters"
+            android:textSize="@dimen/large_text_size"
+            android:textStyle="normal|bold" />
+
+        <ListView
+            android:id="@+id/lvFilters"
+            android:layout_width="match_parent"
+            android:layout_height="170dp"
+            android:choiceMode="singleChoice"
+            android:layout_marginBottom="0dp"
+            />
+
+        <TextView
+            android:layout_marginTop="15dp"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:gravity="center"
@@ -184,7 +203,9 @@
             android:id="@+id/lvDrawerPlaylist"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:choiceMode="singleChoice" />
+            android:choiceMode="singleChoice"
+            android:layout_marginBottom="10dp"
+            />
     </LinearLayout>
 
 

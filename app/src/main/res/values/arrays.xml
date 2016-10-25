@@ -19,8 +19,14 @@
         <item>Blacklist</item>
     </string-array>
 
+    <string-array name="filters">
+        <item>Artists</item>
+        <item>Albums</item>
+        <item>Folders</item>
+        <item>Genres</item>
+    </string-array>
+
     <string-array name="action_menu">
-        <item>Sort</item>
         <item>Source Folders</item>
         <item>Settings</item>
     </string-array>

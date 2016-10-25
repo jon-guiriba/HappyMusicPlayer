@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         logPhoneDetails();
         setupEventHandlers();
         loadUserSettings();
-        presenter.updatePlaylist(player.getPlaylist());
+        presenter.updateCurrentPlaylist(player.getPlaylist());
         presenter.updateDrawerPlaylist(player.getAllPlayLists());
         presenter.updateRepeatButton(player.getRepeatState());
         presenter.updateShuffleButton(player.getIsShuffle());
@@ -115,9 +115,8 @@ public class MainActivity extends AppCompatActivity {
         ((SeekBar) findViewById(R.id.sbTrackProgressBar)).setOnSeekBarChangeListener(eventHandler);
         presenter.getSearchView().setOnQueryTextListener(eventHandler);
         presenter.getSortButton().setOnClickListener(eventHandler);
-        presenter.getAlbumButton().setOnClickListener(eventHandler);
-        presenter.getArtistButton().setOnClickListener(eventHandler);
         presenter.getActionMenuButton().setOnClickListener(eventHandler);
+        presenter.getFiltersListView().setOnItemClickListener(eventHandler);
         presenter.getDrawerLayout().addDrawerListener(eventHandler);
         presenter.getCurrentPlaylistListView().setOnScrollListener(eventHandler);
         player.setOnCompletionListener(eventHandler);

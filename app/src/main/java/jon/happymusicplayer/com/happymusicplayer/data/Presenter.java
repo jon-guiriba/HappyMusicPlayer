@@ -74,10 +74,10 @@ public class Presenter {
     private LinearLayout trackProgressLayout;
     private RelativeLayout playerControlsLayout;
     private Runnable trackBarUpdateTask;
-    private ArrayAdapter<SongModel> currentPlaylistAdapter;
     private ListView lvNumberPickerHours;
     private ListView lvSortOptions;
     private Toast toast;
+    private ListView lvFilters;
 
     public Presenter(Context context) {
         this.context = context;
@@ -100,6 +100,7 @@ public class Presenter {
         lvCurrentPlaylist = (ListView) ((Activity) context).findViewById(R.id.lvCurrentPlayList);
         lvNumberPickerHours = (ListView) ((Activity) context).findViewById(R.id.lvNumberPickerHours);
         lvDrawerPlaylist = (ListView) ((Activity) context).findViewById(R.id.lvDrawerPlaylist);
+        lvFilters = (ListView) ((Activity) context).findViewById(R.id.lvFilters);
         tvSongTitle = (TextView) ((Activity) context).findViewById(R.id.tvSongTitle);
         tvSongDuration = (TextView) ((Activity) context).findViewById(R.id.tvSongDuration);
         sbSongProgressBar = (SeekBar) ((Activity) context).findViewById(R.id.sbTrackProgressBar);
@@ -107,9 +108,7 @@ public class Presenter {
         playerControlsLayout = (RelativeLayout) ((Activity) context).findViewById(R.id.playerControlsLayout);
         trackProgressLayout = (LinearLayout) ((Activity) context).findViewById(R.id.trackProgressLayout);
         searchView = (SearchView) ((Activity) context).findViewById(R.id.actionSearch);
-        btnSort = (ImageButton) ((Activity) context).findViewById(R.id.actionFilterByFolder);
-        btnArtist = (ImageButton) ((Activity) context).findViewById(R.id.actionFilterByArtist);
-        btnAlbum = (ImageButton) ((Activity) context).findViewById(R.id.actionFilterByAlbum);
+        btnSort = (ImageButton) ((Activity) context).findViewById(R.id.actionSort);
         btnActionMenu = (ImageButton) ((Activity) context).findViewById(R.id.actionMenu);
         removeSearchIcon();
 
@@ -118,7 +117,7 @@ public class Presenter {
         drawerLayout.setScrimColor(Color.TRANSPARENT);
 
         setupScrollText();
-
+        updateFilters();
     }
 
     private void setupScrollText() {
@@ -184,11 +183,20 @@ public class Presenter {
         addToPlaylistPopupWindow.showAtLocation(((Activity) context).findViewById(R.id.main_relative_layout), Gravity.CENTER, 0, 0);
     }
 
-    public void updatePlaylist(List<SongModel> playlist) {
+    public void updateCurrentPlaylist(List<SongModel> playlist) {
         if (playlist == null) return;
 
-        currentPlaylistAdapter = new ArrayAdapter<>(context, R.layout.current_playlist_item, playlist);
+        ArrayAdapter currentPlaylistAdapter = new ArrayAdapter<>(context, R.layout.current_playlist_item, playlist);
         lvCurrentPlaylist.setAdapter(currentPlaylistAdapter);
+    }
+
+    public void updateFilters() {
+        ArrayAdapter filtersAdapters = new ArrayAdapter<>(
+                context,
+                R.layout.filter_item,
+                context.getResources().getStringArray(R.array.filters)
+        );
+        lvFilters.setAdapter(filtersAdapters);
     }
 
     public void updateDrawerPlaylist(List<String> drawerPlaylists) {
@@ -271,33 +279,6 @@ public class Presenter {
         addToPlaylistPopupWindow.dismiss();
     }
 
-    public String getAddNewPlaylistText() {
-        return etAddNewPlaylist.getText().toString();
-    }
-
-    public ListView getDrawerPlaylistListView() {
-        return this.lvDrawerPlaylist;
-    }
-
-    public ListView getAddToPlaylistCurrentPlayListsListView() {
-        return lvAddToPlaylistCurrentPlayLists;
-    }
-
-    public SearchView getSearchView() {
-        return searchView;
-    }
-
-    public ListView getCurrentPlaylistListView() {
-        return lvCurrentPlaylist;
-    }
-
-    public ListView getNumberPickerHoursListView() {
-        return lvNumberPickerHours;
-    }
-
-    public Button getSubmitAddNewPlaylistButton() {
-        return btnSubmitAddNewPlaylist;
-    }
 
     public void toggleTrackBarUpdate(boolean isPlayerPlaying) {
         if (isPlayerPlaying) {
@@ -359,10 +340,6 @@ public class Presenter {
         this.sleepTimerPopupWindow.dismiss();
     }
 
-    public DrawerLayout getDrawerLayout() {
-        return drawerLayout;
-    }
-
     public void removeSearchIcon() {
         int magId = context.getResources().getIdentifier("android:id/search_mag_icon", null, null);
         ImageView magImage = (ImageView) searchView.findViewById(magId);
@@ -402,6 +379,37 @@ public class Presenter {
         sortPopupWindow.dismiss();
     }
 
+    public void updateSongDuration(String durationAsText) {
+        tvSongDuration.setText(durationAsText);
+    }
+
+
+    public void setupActionMenuPopupWindow() {
+        actionMenu = new ListPopupWindow(context);
+        actionMenu.setAdapter(new ArrayAdapter<>(context, R.layout.context_menu_item, context.getResources().getTextArray(R.array.action_menu)));
+        actionMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(context, R.color.colorPrimary)));
+        actionMenu.setWidth(250);
+        actionMenu.setModal(true);
+    }
+
+    public void showActionMenu(View view) {
+        actionMenu.setAnchorView(view);
+        actionMenu.setVerticalOffset(-2);
+        actionMenu.setHorizontalOffset(0);
+        actionMenu.show();
+    }
+
+    public void hideActionMenu() {
+        actionMenu.dismiss();
+    }
+
+    public ListPopupWindow getActionMenuPopupWubdiw() {
+        return actionMenu;
+    }
+
+    public Toast getScrollTextToast() {
+        return toast;
+    }
 
     public ImageButton getActionMenuButton() {
         return btnActionMenu;
@@ -413,10 +421,6 @@ public class Presenter {
 
     public ListView getSortListView() {
         return lvSortOptions;
-    }
-
-    public void updateSongDuration(String durationAsText) {
-        tvSongDuration.setText(durationAsText);
     }
 
     public ImageButton getArtistButton() {
@@ -447,31 +451,39 @@ public class Presenter {
         return btnRepeat;
     }
 
-
-    public void setupActionMenuPopupWindow() {
-        actionMenu = new ListPopupWindow(context);
-        actionMenu.setAdapter(new ArrayAdapter<>(context, R.layout.context_menu_item, context.getResources().getTextArray(R.array.action_menu)));
-        actionMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(context, R.color.colorPrimary)));
-        actionMenu.setWidth(250);
-        actionMenu.setModal(true);
+    public DrawerLayout getDrawerLayout() {
+        return drawerLayout;
     }
 
-    public void showActionMenu(View view) {
-        actionMenu.setAnchorView(view);
-        actionMenu.setVerticalOffset(-2);
-        actionMenu.setHorizontalOffset(0);
-        actionMenu.show();
+    public SearchView getSearchView() {
+        return searchView;
     }
 
-    public void hideActionMenu() {
-        actionMenu.dismiss();
+    public ListView getCurrentPlaylistListView() {
+        return lvCurrentPlaylist;
     }
 
-    public ListPopupWindow getActionMenuPopupWubdiw() {
-        return actionMenu;
+    public ListView getNumberPickerHoursListView() {
+        return lvNumberPickerHours;
     }
 
-    public Toast getScrollTextToast() {
-        return toast;
+    public Button getSubmitAddNewPlaylistButton() {
+        return btnSubmitAddNewPlaylist;
+    }
+
+    public String getAddNewPlaylistText() {
+        return etAddNewPlaylist.getText().toString();
+    }
+
+    public ListView getDrawerPlaylistListView() {
+        return this.lvDrawerPlaylist;
+    }
+
+    public ListView getAddToPlaylistCurrentPlayListsListView() {
+        return lvAddToPlaylistCurrentPlayLists;
+    }
+
+    public ListView getFiltersListView() {
+        return lvFilters;
     }
 }

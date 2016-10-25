@@ -157,6 +157,24 @@
             android:layout_height="40dp"
             android:gravity="center"
             android:padding="8dp"
+            android:text="@string/filters"
+            android:textSize="@dimen/large_text_size"
+            android:textStyle="normal|bold" />
+
+        <ListView
+            android:id="@+id/lvFilters"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:choiceMode="singleChoice"
+            android:layout_marginBottom="0dp"
+            />
+
+        <TextView
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:padding="8dp"
             android:text="@string/playlists"
             android:textSize="@dimen/large_text_size"
             android:textStyle="normal|bold" />
@@ -165,7 +183,9 @@
             android:id="@+id/lvDrawerPlaylist"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:choiceMode="singleChoice" />
+            android:choiceMode="singleChoice"
+            android:layout_marginBottom="10dp"
+            />
     </LinearLayout>
 
 
