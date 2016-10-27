@@ -2,6 +2,7 @@ package jon.happymusicplayer.com.happymusicplayer.data.managers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.MultiSelectListPreference;
 import android.preference.PreferenceManager;
 
 import jon.happymusicplayer.com.happymusicplayer.R;
@@ -30,5 +31,6 @@ public class SettingsManager {
         defPreference.apply();
         defPreference.clear();
     }
+
 
 }

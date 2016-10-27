@@ -27,7 +27,6 @@
     </string-array>
 
     <string-array name="action_menu">
-        <item>Source Folders</item>
         <item>Settings</item>
     </string-array>
 
@@ -42,6 +41,12 @@
         <item>Test1</item>
         <item>Test2</item>
         <item>Test3</item>
+    </string-array>
+
+    <string-array name="themes">
+        <item>Light</item>
+        <item>Glass</item>
+        <item>Dark</item>
     </string-array>
 
 </resources>

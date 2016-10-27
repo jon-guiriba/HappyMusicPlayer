@@ -32,9 +32,8 @@
             android:id="@+id/playerControlsLayout"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.45"
             android:layout_marginBottom="30dp"
-            >
+            android:layout_weight="0.45">
 
             <TextView
                 android:id="@+id/tvSongTitle"
@@ -148,10 +147,10 @@
                 </LinearLayout>
 
                 <!--<LinearLayout-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:layout_marginBottom="10dp"-->
-                    <!--android:orientation="horizontal">-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginBottom="10dp"-->
+                <!--android:orientation="horizontal">-->
 
 
                 <!--</LinearLayout>-->
@@ -165,46 +164,59 @@
 
     <!-- The navigation drawer -->
     <LinearLayout
-        android:layout_width="150dp"
+        android:layout_width="320dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@color/colorPrimary"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        >
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:gravity="center"
-            android:padding="8dp"
-            android:text="@string/filters"
-            android:textSize="@dimen/large_text_size"
-            android:textStyle="normal|bold" />
-
-        <ListView
-            android:id="@+id/lvFilters"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:choiceMode="singleChoice"
-            android:layout_marginBottom="0dp"
-            />
-
-        <TextView
-            android:layout_marginTop="6dp"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:gravity="center"
-            android:padding="8dp"
-            android:text="@string/playlists"
-            android:textSize="@dimen/large_text_size"
-            android:textStyle="normal|bold" />
-
-        <ListView
-            android:id="@+id/lvDrawerPlaylist"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="150dp"
             android:layout_height="match_parent"
-            android:choiceMode="singleChoice"
-            android:layout_marginBottom="10dp"
-            />
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/filters"
+                android:textSize="@dimen/large_text_size"
+                android:textStyle="normal|bold" />
+
+            <ListView
+                android:id="@+id/lvFilters"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginBottom="0dp"
+                android:choiceMode="singleChoice" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="160dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/playlists"
+                android:textSize="@dimen/large_text_size"
+                android:textStyle="normal|bold" />
+
+            <ListView
+                android:id="@+id/lvDrawerPlaylist"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="10dp"
+                android:choiceMode="singleChoice" />
+        </LinearLayout>
+
+
     </LinearLayout>
 
 

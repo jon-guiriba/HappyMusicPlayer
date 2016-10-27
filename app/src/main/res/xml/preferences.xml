@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="@string/source_folders">
+        <CheckBoxPreference
+            android:key="@string/pref_use_source_folders"
+            android:title="@string/use_source_folders"
+            android:defaultValue="false"/>
+        <MultiSelectListPreference
+            android:key="@string/pref_source_folders"
+            android:title="@string/source_folders"
+            android:dependency="@string/pref_use_source_folders"
+            />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/themes"
+        >
+        <ListPreference
+            android:key="@string/pref_themes"
+            android:title="@string/themes"
+            />
+    </PreferenceCategory>
+
+</PreferenceScreen>

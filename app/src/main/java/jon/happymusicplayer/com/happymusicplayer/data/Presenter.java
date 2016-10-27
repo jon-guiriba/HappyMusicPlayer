@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,9 +27,12 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.SeekBar;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import jon.happymusicplayer.com.happymusicplayer.R;
@@ -58,6 +62,7 @@ public class Presenter {
     private ListView lvAddToPlaylistCurrentPlayLists;
     private TextView tvSongTitle;
     private TextView tvSongDuration;
+    private GridView gvFilters;
     private EditText etAddNewPlaylist;
     private SearchView searchView;
     private SeekBar sbSongProgressBar;
@@ -77,7 +82,6 @@ public class Presenter {
     private ListView lvNumberPickerHours;
     private ListView lvSortOptions;
     private Toast toast;
-    private ListView lvFilters;
 
     public Presenter(Context context) {
         this.context = context;
@@ -100,7 +104,7 @@ public class Presenter {
         lvCurrentPlaylist = (ListView) ((Activity) context).findViewById(R.id.lvCurrentPlayList);
         lvNumberPickerHours = (ListView) ((Activity) context).findViewById(R.id.lvNumberPickerHours);
         lvDrawerPlaylist = (ListView) ((Activity) context).findViewById(R.id.lvDrawerPlaylist);
-        lvFilters = (ListView) ((Activity) context).findViewById(R.id.lvFilters);
+        gvFilters = (GridView) ((Activity) context).findViewById(R.id.gvFilters);
         tvSongTitle = (TextView) ((Activity) context).findViewById(R.id.tvSongTitle);
         tvSongDuration = (TextView) ((Activity) context).findViewById(R.id.tvSongDuration);
         sbSongProgressBar = (SeekBar) ((Activity) context).findViewById(R.id.sbTrackProgressBar);
@@ -190,13 +194,36 @@ public class Presenter {
         lvCurrentPlaylist.setAdapter(currentPlaylistAdapter);
     }
 
+    //tracker
     public void updateFilters() {
-        ArrayAdapter filtersAdapters = new ArrayAdapter<>(
+
+        List<HashMap<String, String>> list = new ArrayList<>();
+
+        int[] icons = {
+                R.drawable.img_album_action,
+                R.drawable.img_artist_action,
+                R.drawable.img_folder_action,
+                R.drawable.img_genre_action
+        };
+
+        for (int i = 0; i < icons.length; i++) {
+            HashMap<String, String> map = new HashMap<>();
+            map.put("icon", "" + icons[i]);
+            list.add(map);
+        }
+
+        String[] from = {"icon"};
+        int[] to = {R.id.filterIcon};
+
+        SimpleAdapter adapter = new SimpleAdapter(
                 context,
+                list,
                 R.layout.filter_item,
-                context.getResources().getStringArray(R.array.filters)
+                from,
+                to
         );
-        lvFilters.setAdapter(filtersAdapters);
+
+        gvFilters.setAdapter(adapter);
     }
 
     public void updateDrawerPlaylist(List<String> drawerPlaylists) {
@@ -386,7 +413,7 @@ public class Presenter {
 
     public void setupActionMenuPopupWindow() {
         actionMenu = new ListPopupWindow(context);
-        actionMenu.setAdapter(new ArrayAdapter<>(context, R.layout.context_menu_item, context.getResources().getTextArray(R.array.action_menu)));
+        actionMenu.setAdapter(new ArrayAdapter<>(context, R.layout.action_menu_item, context.getResources().getTextArray(R.array.action_menu)));
         actionMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(context, R.color.colorPrimary)));
         actionMenu.setWidth(250);
         actionMenu.setModal(true);
@@ -403,7 +430,7 @@ public class Presenter {
         actionMenu.dismiss();
     }
 
-    public ListPopupWindow getActionMenuPopupWubdiw() {
+    public ListPopupWindow getActionMenuPopupWindow() {
         return actionMenu;
     }
 
@@ -483,7 +510,7 @@ public class Presenter {
         return lvAddToPlaylistCurrentPlayLists;
     }
 
-    public ListView getFiltersListView() {
-        return lvFilters;
+    public GridView getFiltersGridView() {
+        return gvFilters;
     }
 }

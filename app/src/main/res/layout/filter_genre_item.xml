@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/filterByArtistItem"
+    android:id="@+id/filterByGenreItem"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/current_playlist_item_bg"
-    android:drawableEnd="@drawable/img_artist"
+    android:drawableEnd="@drawable/img_folder"
     android:ellipsize="end"
     android:gravity="center_vertical"
     android:maxLines="3"
@@ -14,5 +14,5 @@
     android:paddingRight="8dp"
     android:paddingTop="5dp"
     android:textColor="@color/colorPrimaryDark"
-    android:textSize="17sp" />
+    android:textSize="15sp" />
 

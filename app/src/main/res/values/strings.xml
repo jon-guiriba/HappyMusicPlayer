@@ -16,4 +16,10 @@
     <string name="playlists">Playlists</string>
     <string name="settings">Settings</string>
     <string name="filters">Filters</string>
+    <string name="pref_source_folders">pref_source_folders</string>
+    <string name="source_folders">Source Folders</string>
+    <string name="use_source_folders">Use Source Folders</string>
+    <string name="pref_use_source_folders">pref_use_source_folders</string>
+    <string name="themes">Themes</string>
+    <string name="pref_themes">pref_themes</string>
 </resources>

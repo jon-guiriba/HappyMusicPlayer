@@ -10,15 +10,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import java.util.List;
+
 import jon.happymusicplayer.com.happymusicplayer.R;
 import jon.happymusicplayer.com.happymusicplayer.data.AppEventHandler;
 import jon.happymusicplayer.com.happymusicplayer.data.AppMusicPlayer;
 import jon.happymusicplayer.com.happymusicplayer.data.Presenter;
+import jon.happymusicplayer.com.happymusicplayer.data.daos.SongsDao;
 import jon.happymusicplayer.com.happymusicplayer.data.managers.SettingsManager;
 import jon.happymusicplayer.com.happymusicplayer.tasks.UpdateSongDataTask;
 import jon.happymusicplayer.com.happymusicplayer.tasks.UpdateProgressBarTask;
@@ -73,12 +79,11 @@ public class MainActivity extends AppCompatActivity {
         presenter.updateShuffleButton(player.getIsShuffle());
         presenter.updatePlayButton(player.isPlaying());
 
-
-        if(player.getSong() != null)
-        presenter.updateSongDetails(
-                player.getSong().getTitle(),
-                Utilities.getDurationAsText(player.getCurrentPosition(), player.getDuration())
-        );
+        if (player.getSong() != null)
+            presenter.updateSongDetails(
+                    player.getSong().getTitle(),
+                    Utilities.getDurationAsText(player.getCurrentPosition(), player.getDuration())
+            );
 
         setupEventHandlers();
     }
@@ -116,11 +121,43 @@ public class MainActivity extends AppCompatActivity {
         presenter.getSearchView().setOnQueryTextListener(eventHandler);
         presenter.getSortButton().setOnClickListener(eventHandler);
         presenter.getActionMenuButton().setOnClickListener(eventHandler);
-        presenter.getFiltersListView().setOnItemClickListener(eventHandler);
         presenter.getDrawerLayout().addDrawerListener(eventHandler);
         presenter.getCurrentPlaylistListView().setOnScrollListener(eventHandler);
         player.setOnCompletionListener(eventHandler);
         player.setOnPreparedListener(eventHandler);
+
+        presenter.getFiltersGridView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+                        SongsDao songsDao = new SongsDao(getApplicationContext());
+                        List<String> albums = songsDao.getAllAlbums();
+                        ArrayAdapter adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.filter_album_item, albums);
+                        presenter.getCurrentPlaylistListView().setAdapter(adapter);
+                        break;
+
+                    case 1:
+                        songsDao = new SongsDao(getApplicationContext());
+                        List<String> artists = songsDao.getAllArtists();
+                        adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.filter_artist_item, artists);
+                        presenter.getCurrentPlaylistListView().setAdapter(adapter);
+                        break;
+
+                    case 2:
+                        songsDao = new SongsDao(getApplicationContext());
+                        List<String> folders = songsDao.getAllFolders();
+                        adapter = new ArrayAdapter<>(getApplicationContext(), R.layout.filter_folder_item, folders);
+                        presenter.getCurrentPlaylistListView().setAdapter(adapter);
+                        break;
+
+                    case 3:
+                        break;
+                }
+            }
+        });
+
     }
 
     private void loadUserSettings() {

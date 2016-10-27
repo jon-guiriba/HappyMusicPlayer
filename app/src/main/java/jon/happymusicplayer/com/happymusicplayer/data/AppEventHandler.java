@@ -3,14 +3,18 @@ package jon.happymusicplayer.com.happymusicplayer.data;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.preference.PreferenceActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.SeekBar;
 
@@ -90,7 +94,7 @@ public class AppEventHandler implements View.OnClickListener,
 
             case R.id.actionMenu:
                 presenter.setupActionMenuPopupWindow();
-                presenter.getActionMenuPopupWubdiw().setOnItemClickListener(this);
+                presenter.getActionMenuPopupWindow().setOnItemClickListener(this);
                 presenter.showActionMenu(v);
                 break;
 
@@ -99,12 +103,13 @@ public class AppEventHandler implements View.OnClickListener,
                 presenter.getSortListView().setOnItemClickListener(this);
                 presenter.showSortPopupView();
                 break;
+
+
         }
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-
         switch (v.getId()) {
             case R.id.currentPlaylistItem:
                 SongModel song = (SongModel) parent.getItemAtPosition(position);
@@ -225,31 +230,18 @@ public class AppEventHandler implements View.OnClickListener,
                 presenter.updateCurrentPlaylist(playlist);
                 break;
 
-            case R.id.filterItem:
-                String filterOption = (String) parent.getItemAtPosition(position);
-                switch (filterOption) {
-                    case "Artists":
-                        songsDao = new SongsDao(context);
-                        List<String> artists = songsDao.getAllArtists();
-                        ArrayAdapter adapter = new ArrayAdapter<>(context, R.layout.filter_artist_item, artists);
-                        presenter.getCurrentPlaylistListView().setAdapter(adapter);
-                        break;
-
-                    case "Albums":
-                        songsDao = new SongsDao(context);
-                        List<String> albums = songsDao.getAllAlbums();
-                        adapter = new ArrayAdapter<>(context, R.layout.filter_album_item, albums);
-                        presenter.getCurrentPlaylistListView().setAdapter(adapter);
-                        break;
-                    case "Folders":
-                        songsDao = new SongsDao(context);
-                        List<String> folders = songsDao.getAllFolders();
-                        adapter = new ArrayAdapter<>(context, R.layout.filter_folder_item, folders);
-                        presenter.getCurrentPlaylistListView().setAdapter(adapter);
-                        break;
-                }
-
+            case R.id.filterIcon:
                 break;
+
+            case R.id.actionMenuItem: {
+                Intent intent = new Intent();
+                intent.setClassName(
+                        context,
+                        "jon.happymusicplayer.com.happymusicplayer.Activities.PreferencesActivity"
+                );
+                context.startActivity(intent);
+            }
+            break;
         }
     }
 

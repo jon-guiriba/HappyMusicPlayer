@@ -20,20 +20,19 @@
             android:layout_height="match_parent"
             android:layout_above="@+id/playerControlsLayout"
             android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
             android:layout_marginBottom="5dp"
             android:background="@color/colorPrimary"
             android:choiceMode="singleChoice"
-            android:listSelector="@drawable/current_playlist_item_bg"
 
-            android:layout_alignParentTop="true" />
+            android:listSelector="@drawable/current_playlist_item_bg" />
 
         <RelativeLayout
             android:id="@+id/playerControlsLayout"
             android:layout_width="wrap_content"
             android:layout_height="120dp"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            >
+            android:layout_alignParentStart="true">
 
             <LinearLayout
                 android:id="@+id/trackProgressLayout"
@@ -152,27 +151,22 @@
         android:background="@color/colorPrimary"
         android:orientation="vertical">
 
+        <GridView
+            android:id="@+id/gvFilters"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:numColumns="auto_fit"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            >
+
+
+        </GridView>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:gravity="center"
-            android:padding="8dp"
-            android:text="@string/filters"
-            android:textSize="@dimen/large_text_size"
-            android:textStyle="normal|bold" />
-
-        <ListView
-            android:id="@+id/lvFilters"
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:choiceMode="singleChoice"
-            android:layout_marginBottom="0dp"
-            />
-
-        <TextView
             android:layout_marginTop="6dp"
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
             android:gravity="center"
             android:padding="8dp"
             android:text="@string/playlists"
@@ -183,9 +177,8 @@
             android:id="@+id/lvDrawerPlaylist"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:choiceMode="singleChoice"
             android:layout_marginBottom="10dp"
-            />
+            android:choiceMode="singleChoice" />
     </LinearLayout>
 
 
