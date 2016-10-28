@@ -17,7 +17,6 @@ import jon.happymusicplayer.com.happymusicplayer.data.contracts.PlaylistsContrac
  */
 public class PlaylistsDao {
 
-
     private final SQLiteDatabase db;
 
     public PlaylistsDao(Context context) {

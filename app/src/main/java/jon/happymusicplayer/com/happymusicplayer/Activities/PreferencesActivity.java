@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
+import jon.happymusicplayer.com.happymusicplayer.Fragments.PreferencesFragment;
 import jon.happymusicplayer.com.happymusicplayer.R;
 import jon.happymusicplayer.com.happymusicplayer.data.daos.SongsDao;
 
@@ -24,43 +25,7 @@ public class PreferencesActivity extends PreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new PreferenceFragment()).commit();
-    }
-
-    public static class PreferenceFragment extends android.preference.PreferenceFragment {
-        @Override
-        public void onCreate(final Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.preferences);
-
-            setupThemes();
-            setupSourceFolders();
-        }
-
-        private void setupSourceFolders() {
-            MultiSelectListPreference sourceFolders = (MultiSelectListPreference) findPreference(getResources().getString(R.string.pref_source_folders));
-            SongsDao songsDao = new SongsDao(this.getActivity());
-            List<String> folders = songsDao.getAllAlbums();
-            sourceFolders.setDefaultValue("" + 0);
-            sourceFolders.setEntries(folders.toArray(new String[0]));
-            sourceFolders.setEntryValues(folders.toArray(new String[0]));
-        }
-
-        private void setupThemes() {
-            ListPreference themes = (ListPreference) findPreference(getResources().getString(R.string.pref_themes));
-            themes.setDefaultValue("" + 0);
-            themes.setEntries(getResources().getStringArray(R.array.themes));
-            themes.setEntryValues(getResources().getStringArray(R.array.themes));
-        }
-
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View view = super.onCreateView(inflater, container, savedInstanceState);
-            view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorPrimary));
-
-            return view;
-        }
+        getFragmentManager().beginTransaction().replace(android.R.id.content, new PreferencesFragment()).commit();
     }
 
     @Override

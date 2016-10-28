@@ -171,51 +171,32 @@
         android:orientation="horizontal"
         >
 
-        <LinearLayout
-            android:layout_width="150dp"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="@string/playlists"
+            android:textSize="@dimen/large_text_size"
+            android:textStyle="normal|bold" />
+
+        <ListView
+            android:id="@+id/lvDrawerPlaylist"
+            android:layout_width="220dp"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_marginBottom="10dp"
+            android:choiceMode="singleChoice" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:gravity="center"
-                android:padding="8dp"
-                android:text="@string/filters"
-                android:textSize="@dimen/large_text_size"
-                android:textStyle="normal|bold" />
-
-            <ListView
-                android:id="@+id/lvFilters"
-                android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_marginBottom="0dp"
-                android:choiceMode="singleChoice" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="160dp"
+        <GridView
+            android:id="@+id/gvFilters"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="6dp"
-                android:gravity="center"
-                android:padding="8dp"
-                android:text="@string/playlists"
-                android:textSize="@dimen/large_text_size"
-                android:textStyle="normal|bold" />
-
-            <ListView
-                android:id="@+id/lvDrawerPlaylist"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="10dp"
-                android:choiceMode="singleChoice" />
-        </LinearLayout>
-
+            android:numColumns="auto_fit"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            >
+        </GridView>
 
     </LinearLayout>
 

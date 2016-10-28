@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory
-        android:title="@string/source_folders">
+
         <CheckBoxPreference
             android:key="@string/pref_use_source_folders"
-            android:title="@string/use_source_folders"
+            android:title="Use source folders"
             android:defaultValue="false"/>
         <MultiSelectListPreference
             android:key="@string/pref_source_folders"
-            android:title="@string/source_folders"
+            android:title="Select source folders"
             android:dependency="@string/pref_use_source_folders"
             />
-    </PreferenceCategory>
-    <PreferenceCategory
-        android:title="@string/themes"
-        >
+
         <ListPreference
             android:key="@string/pref_themes"
             android:title="@string/themes"
             />
-    </PreferenceCategory>
+
+    <CheckBoxPreference
+        android:key="@string/pref_pause_on_disconnect"
+        android:title="Pause when headphone is disconnected"/>
+
+    <CheckBoxPreference
+        android:key="@string/pref_use_volume_as_navigation"
+        android:title="Use volume buttons as navigation"
+        />
+
+
+
 
 </PreferenceScreen>

@@ -4,11 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ListPopupWindow;
 import android.view.Display;
 import android.view.Gravity;
@@ -35,7 +37,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import jon.happymusicplayer.com.happymusicplayer.Fragments.PlaylistFragment;
+import jon.happymusicplayer.com.happymusicplayer.Fragments.SongDetailsFragment;
 import jon.happymusicplayer.com.happymusicplayer.R;
+import jon.happymusicplayer.com.happymusicplayer.adapters.PagerAdapter;
 import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 
 /**
@@ -65,6 +70,7 @@ public class Presenter {
     private GridView gvFilters;
     private EditText etAddNewPlaylist;
     private SearchView searchView;
+    private ViewPager viewPager;
     private SeekBar sbSongProgressBar;
     private ListPopupWindow songOptions;
     private ListPopupWindow actionMenu;
@@ -104,7 +110,6 @@ public class Presenter {
         lvCurrentPlaylist = (ListView) ((Activity) context).findViewById(R.id.lvCurrentPlayList);
         lvNumberPickerHours = (ListView) ((Activity) context).findViewById(R.id.lvNumberPickerHours);
         lvDrawerPlaylist = (ListView) ((Activity) context).findViewById(R.id.lvDrawerPlaylist);
-        gvFilters = (GridView) ((Activity) context).findViewById(R.id.gvFilters);
         tvSongTitle = (TextView) ((Activity) context).findViewById(R.id.tvSongTitle);
         tvSongDuration = (TextView) ((Activity) context).findViewById(R.id.tvSongDuration);
         sbSongProgressBar = (SeekBar) ((Activity) context).findViewById(R.id.sbTrackProgressBar);
@@ -120,11 +125,25 @@ public class Presenter {
         lvCurrentPlaylist.setTextFilterEnabled(false);
         drawerLayout.setScrimColor(Color.TRANSPARENT);
 
-        setupScrollText();
-        updateFilters();
+        loadScrollText();
+        loadFilters();
+        loadPager();
     }
 
-    private void setupScrollText() {
+    private void loadPager() {
+        viewPager = (ViewPager) ((Activity) context).findViewById(R.id.viewPager);
+        List<Fragment> fragments = new ArrayList<>();
+        fragments.add(Fragment.instantiate(context, PlaylistFragment.class.getName()));
+        fragments.add(Fragment.instantiate(context, SongDetailsFragment.class.getName()));
+
+        PagerAdapter adpater = new PagerAdapter(
+                ((AppCompatActivity) context).getSupportFragmentManager(),
+                    fragments
+                );
+        viewPager.setAdapter(adpater);
+    }
+
+    private void loadScrollText() {
         toast = new Toast(context);
         View view = ((Activity) context).getLayoutInflater().inflate(R.layout.scroll_textview,
                 (ViewGroup) ((Activity) context).findViewById(R.id.lrScrollTextRoot));
@@ -194,8 +213,8 @@ public class Presenter {
         lvCurrentPlaylist.setAdapter(currentPlaylistAdapter);
     }
 
-    //tracker
-    public void updateFilters() {
+    public void loadFilters() {
+        gvFilters = (GridView) ((Activity) context).findViewById(R.id.gvFilters);
 
         List<HashMap<String, String>> list = new ArrayList<>();
 
