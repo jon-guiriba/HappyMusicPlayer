@@ -3,18 +3,14 @@ package jon.happymusicplayer.com.happymusicplayer.data;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.preference.PreferenceActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.SeekBar;
 
@@ -42,15 +38,13 @@ public class AppEventHandler implements View.OnClickListener,
         SeekBar.OnSeekBarChangeListener, OnTaskCompleted, SearchView.OnQueryTextListener,
         MediaPlayer.OnPreparedListener, DrawerLayout.DrawerListener, MediaPlayer.OnCompletionListener, AbsListView.OnScrollListener {
 
-    private final AppMusicPlayer player;
-    private final Context context;
-    private Presenter presenter;
+    private static AppEventHandler eventHandler;
+    private static AppMusicPlayer player;
+    private static Context context;
+    private static Presenter presenter;
     private SongModel selectedSong;
 
-    public AppEventHandler(Context context, Presenter presenter, AppMusicPlayer player) {
-        this.presenter = presenter;
-        this.player = player;
-        this.context = context;
+    public AppEventHandler() {
     }
 
     @Override
@@ -128,6 +122,7 @@ public class AppEventHandler implements View.OnClickListener,
                 }
 
                 player.setPlaylist(playListName);
+                Log.i("onItemClick ", playListName);
                 presenter.updateCurrentPlaylist(player.getPlaylist());
                 break;
 
@@ -361,7 +356,6 @@ public class AppEventHandler implements View.OnClickListener,
             player.setPlaylist(playList);
             presenter.updateCurrentPlaylist(playList);
         }
-
     }
 
 
@@ -401,7 +395,7 @@ public class AppEventHandler implements View.OnClickListener,
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         switch (view.getId()) {
-            case R.id.lvCurrentPlayList:
+            case R.id.lvCurrentPlaylist:
 //                SongModel song = (SongModel) presenter.getCurrentPlaylistListView().getItemAtPosition(firstVisibleItem);
 //                if (song == null) return;
 //                String scrollText = "" + song.getTitle().charAt(0);
@@ -416,6 +410,25 @@ public class AppEventHandler implements View.OnClickListener,
 //                presenter.getScrollTextToast().show();
                 break;
         }
+    }
+
+    public static synchronized AppEventHandler getInstance() {
+        if (eventHandler == null) {
+            eventHandler = new AppEventHandler();
+        }
+        return eventHandler;
+    }
+
+    public static void setContext(Context context) {
+        AppEventHandler.context = context;
+    }
+
+    public static void setPlayer(AppMusicPlayer player) {
+        AppEventHandler.player = player;
+    }
+
+    public static void setPresenter(Presenter presenter) {
+        AppEventHandler.presenter = presenter;
     }
 
 }

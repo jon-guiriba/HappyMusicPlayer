@@ -40,7 +40,7 @@ import java.util.List;
 import jon.happymusicplayer.com.happymusicplayer.Fragments.PlaylistFragment;
 import jon.happymusicplayer.com.happymusicplayer.Fragments.SongDetailsFragment;
 import jon.happymusicplayer.com.happymusicplayer.R;
-import jon.happymusicplayer.com.happymusicplayer.adapters.PagerAdapter;
+import jon.happymusicplayer.com.happymusicplayer.adapters.AppPagerAdapter;
 import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 
 /**
@@ -93,7 +93,7 @@ public class Presenter {
         this.context = context;
     }
 
-    public void init(Display display, int orientation) {
+    public void init(Display display, int orientation, AppMusicPlayer player) {
         switch (orientation) {
             case Configuration.ORIENTATION_LANDSCAPE:
                 ((Activity) context).setContentView(R.layout.activity_main_land);
@@ -107,7 +107,7 @@ public class Presenter {
         btnBackward = (ImageButton) ((Activity) context).findViewById(R.id.btnBackward);
         btnRepeat = (ImageButton) ((Activity) context).findViewById(R.id.btnRepeat);
         btnShuffle = (ImageButton) ((Activity) context).findViewById(R.id.btnShuffle);
-        lvCurrentPlaylist = (ListView) ((Activity) context).findViewById(R.id.lvCurrentPlayList);
+        lvCurrentPlaylist = (ListView) ((Activity) context).findViewById(R.id.lvCurrentPlaylist);
         lvNumberPickerHours = (ListView) ((Activity) context).findViewById(R.id.lvNumberPickerHours);
         lvDrawerPlaylist = (ListView) ((Activity) context).findViewById(R.id.lvDrawerPlaylist);
         tvSongTitle = (TextView) ((Activity) context).findViewById(R.id.tvSongTitle);
@@ -122,25 +122,22 @@ public class Presenter {
         removeSearchIcon();
 
         sbSongProgressBar.setMax(100);
-        lvCurrentPlaylist.setTextFilterEnabled(false);
         drawerLayout.setScrimColor(Color.TRANSPARENT);
 
         loadScrollText();
         loadFilters();
-        loadPager();
+        loadPager(player);
     }
 
-    private void loadPager() {
-        viewPager = (ViewPager) ((Activity) context).findViewById(R.id.viewPager);
+    private void loadPager(AppMusicPlayer player) {
         List<Fragment> fragments = new ArrayList<>();
-        fragments.add(Fragment.instantiate(context, PlaylistFragment.class.getName()));
-        fragments.add(Fragment.instantiate(context, SongDetailsFragment.class.getName()));
 
-        PagerAdapter adpater = new PagerAdapter(
+        AppPagerAdapter adapter = new AppPagerAdapter(
                 ((AppCompatActivity) context).getSupportFragmentManager(),
-                    fragments
-                );
-        viewPager.setAdapter(adpater);
+                player
+        );
+        viewPager = (ViewPager) ((Activity) context).findViewById(R.id.viewPager);
+        viewPager.setAdapter(adapter);
     }
 
     private void loadScrollText() {
@@ -209,8 +206,7 @@ public class Presenter {
     public void updateCurrentPlaylist(List<SongModel> playlist) {
         if (playlist == null) return;
 
-        ArrayAdapter currentPlaylistAdapter = new ArrayAdapter<>(context, R.layout.current_playlist_item, playlist);
-        lvCurrentPlaylist.setAdapter(currentPlaylistAdapter);
+        viewPager.getAdapter().notifyDataSetChanged();
     }
 
     public void loadFilters() {
@@ -531,5 +527,9 @@ public class Presenter {
 
     public GridView getFiltersGridView() {
         return gvFilters;
+    }
+
+    public ViewPager getPager() {
+        return viewPager;
     }
 }

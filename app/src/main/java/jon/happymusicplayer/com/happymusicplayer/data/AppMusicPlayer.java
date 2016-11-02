@@ -105,8 +105,8 @@ public class AppMusicPlayer extends MediaPlayer {
             return;
         }
 
-        int playListId = playlistsDao.getSingleByName(playListName).getId();
-        playlist = songsDao.getAllByPlayList(playListId);
+        int playlistId = playlistsDao.getSingleByName(playListName).getId();
+        playlist = songsDao.getAllByPlayList(playlistId);
     }
 
     public void setPlaylist(List<SongModel> playlist) {
