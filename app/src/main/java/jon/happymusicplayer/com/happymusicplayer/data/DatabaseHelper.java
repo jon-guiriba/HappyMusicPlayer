@@ -6,17 +6,19 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 
+import jon.happymusicplayer.com.happymusicplayer.EventHandlers.AppEventHandler;
 import jon.happymusicplayer.com.happymusicplayer.R;
 import jon.happymusicplayer.com.happymusicplayer.data.contracts.PlaylistItemsContract;
 import jon.happymusicplayer.com.happymusicplayer.data.contracts.PlaylistsContract;
 import jon.happymusicplayer.com.happymusicplayer.data.contracts.SongsContract;
+import jon.happymusicplayer.com.happymusicplayer.tasks.UpdateSongDataTask;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static DatabaseHelper dbInstance;
 
     private static final String DATABASE_NAME = "happy_music_player_db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 1;
 
 
     private final Context context;
@@ -45,6 +47,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv = new ContentValues();
         cv.put(PlaylistsContract.PlaylistsEntry.NAME, context.getResources().getString(R.string.recently_added));
         db.insert(PlaylistsContract.PlaylistsEntry.TABLE_NAME, null, cv);
+
+        new UpdateSongDataTask(context, AppEventHandler.getInstance()).execute();
+
     }
 
     @Override
@@ -64,6 +69,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv = new ContentValues();
         cv.put(PlaylistsContract.PlaylistsEntry.NAME, "Recently Added");
         db.insert(PlaylistsContract.PlaylistsEntry.TABLE_NAME, null, cv);
+        new UpdateSongDataTask(context, AppEventHandler.getInstance()).execute();
     }
 
     @Override
@@ -83,6 +89,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv = new ContentValues();
         cv.put(PlaylistsContract.PlaylistsEntry.NAME, "Recently Added");
         db.insert(PlaylistsContract.PlaylistsEntry.TABLE_NAME, null, cv);
+        new UpdateSongDataTask(context, AppEventHandler.getInstance()).execute();
     }
 
     public static synchronized DatabaseHelper getInstance(Context context) {

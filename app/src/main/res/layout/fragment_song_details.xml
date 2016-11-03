@@ -8,7 +8,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.609"
+        android:layout_weight="0.8"
         android:background="@color/lightgray">
 
         <ImageView
@@ -24,49 +24,49 @@
         android:id="@+id/song_details_title"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.127"
-        android:gravity="center"
-        android:text="@string/song_title"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:layout_weight="0.09"
         android:background="@android:color/transparent"
         android:cursorVisible="false"
-        />
-
-    <EditText
-        android:id="@+id/song_details_artist"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.107"
         android:gravity="center"
-        android:text="@string/song_artist"
-        android:background="@android:color/transparent"
-        android:cursorVisible="false"/>
+        android:singleLine="true"
+        android:textSize="18sp"
+        android:text="@string/song_title" />
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.167"
-        android:weightSum="1">
+        android:layout_weight="0.08"
+        android:orientation="horizontal"
+        >
+
+        <EditText
+            android:id="@+id/song_details_artist"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:cursorVisible="false"
+            android:gravity="center"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/song_artist" />
 
         <EditText
             android:id="@+id/song_details_album"
-            android:layout_width="0dp"
+            android:layout_width="150dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            android:gravity="center"
-            android:text="@string/song_album"
             android:background="@android:color/transparent"
-            android:cursorVisible="false"/>
-
-        <EditText
-            android:id="@+id/song_details_genre"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.5"
+            android:cursorVisible="false"
             android:gravity="center"
-            android:text="@string/song_genre"
-            android:background="@android:color/transparent"
-            android:cursorVisible="false"/>
-
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:singleLine="true"
+          android:text="@string/song_album" />
     </LinearLayout>
+
+
 
 </LinearLayout>

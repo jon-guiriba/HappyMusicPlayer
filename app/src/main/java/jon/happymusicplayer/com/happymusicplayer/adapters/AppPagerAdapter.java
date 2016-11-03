@@ -63,8 +63,7 @@ public class AppPagerAdapter extends FragmentPagerAdapter {
             ((SongDetailsFragment) object).update(
                     player.getSong().getTitle(),
                     player.getSong().getArtist(),
-                    player.getSong().getAlbum(),
-                    player.getSong().getGenre()
+                    player.getSong().getAlbum()
             );
         }
     }

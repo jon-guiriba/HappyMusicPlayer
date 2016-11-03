@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
         AppEventHandler.setContext(this);
         AppEventHandler.setPlayer(player);
         AppEventHandler.setPresenter(presenter);
-
     }
 
     @Override
@@ -97,8 +96,6 @@ public class MainActivity extends AppCompatActivity {
         presenter.updateShuffleButton(player.getIsShuffle());
         presenter.setTrackBarUpdateTask(new UpdateProgressBarTask(player, presenter));
         SettingsManager.setContext(this);
-
-        new UpdateSongDataTask(this, AppEventHandler.getInstance()).execute();
     }
 
     private void logPhoneDetails() {

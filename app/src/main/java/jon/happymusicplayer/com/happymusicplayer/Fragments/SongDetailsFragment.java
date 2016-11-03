@@ -29,7 +29,6 @@ public class SongDetailsFragment extends Fragment {
         tvTitle = (TextView) view.findViewById(R.id.song_details_title);
         tvArtist = (TextView) view.findViewById(R.id.song_details_artist);
         tvAlbum = (TextView) view.findViewById(R.id.song_details_album);
-        tvGenre = (TextView) view.findViewById(R.id.song_details_genre);
         return view;
     }
 
@@ -37,10 +36,9 @@ public class SongDetailsFragment extends Fragment {
         return new SongDetailsFragment();
     }
 
-    public void update(String title, String artist, String album, String genre) {
+    public void update(String title, String artist, String album) {
         tvTitle.setText(title);
         tvArtist.setText(artist);
         tvAlbum.setText(album);
-        tvGenre.setText(genre);
     }
 }

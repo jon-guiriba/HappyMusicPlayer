@@ -171,7 +171,7 @@ public class AppEventHandler implements View.OnClickListener,
     public void onTaskCompleted() {
         SongsDao songsDao = new SongsDao(context);
         List<SongModel> playList = songsDao.getAllByPlayList(1);
-        if (player.getPlaylist() == null) {
+        if (player.getPlaylist().getSongs() == null) {
             player.setPlaylist(playList);
             presenter.updatePagerPlaylist();
         }

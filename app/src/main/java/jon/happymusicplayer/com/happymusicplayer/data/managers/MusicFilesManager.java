@@ -47,11 +47,10 @@ public class MusicFilesManager {
                 String artist = songsCursor.getString(songsCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
                 String album = songsCursor.getString(songsCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM));
                 int duration = songsCursor.getInt(songsCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION));
-                String genre = songsCursor.getString(songsCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME));
                 String path = songsCursor.getString(songsCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
 
                 if (isMusic) {
-                    songsDao.addSong(title, artist, album, duration, path, genre);
+                    songsDao.addSong(title, artist, album, duration, path);
                 }
 
             } while (songsCursor.moveToNext());
@@ -91,7 +90,7 @@ public class MusicFilesManager {
                 String path = songsCursor.getString(songsCursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA));
 
                 if (isMusic) {
-                    songsDao.addSong(title, artist, album, duration, path, genre);
+                    songsDao.addSong(title, artist, album, duration, path);
                 }
 
             } while (songsCursor.moveToNext());
