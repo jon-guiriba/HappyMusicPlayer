@@ -8,10 +8,12 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ListPopupWindow;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -41,6 +43,7 @@ import jon.happymusicplayer.com.happymusicplayer.Fragments.PlaylistFragment;
 import jon.happymusicplayer.com.happymusicplayer.Fragments.SongDetailsFragment;
 import jon.happymusicplayer.com.happymusicplayer.R;
 import jon.happymusicplayer.com.happymusicplayer.adapters.AppPagerAdapter;
+import jon.happymusicplayer.com.happymusicplayer.data.models.Playlist;
 import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 
 /**
@@ -203,9 +206,9 @@ public class Presenter {
         addToPlaylistPopupWindow.showAtLocation(((Activity) context).findViewById(R.id.main_relative_layout), Gravity.CENTER, 0, 0);
     }
 
-    public void updateCurrentPlaylist(List<SongModel> playlist) {
+    public void updateCurrentPlaylist(Playlist playlist) {
         if (playlist == null) return;
-
+        Log.i("playlist ", playlist.getName());
         viewPager.getAdapter().notifyDataSetChanged();
     }
 

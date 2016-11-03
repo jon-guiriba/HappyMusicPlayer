@@ -19,7 +19,7 @@
 
 
         <ListView
-            android:id="@+id/lvCurrentPlaylist"
+            android:id="@+id/lvCurrentPlaylist_LAND"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginBottom="5dp"

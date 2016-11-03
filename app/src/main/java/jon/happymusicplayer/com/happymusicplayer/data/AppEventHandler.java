@@ -150,8 +150,7 @@ public class AppEventHandler implements View.OnClickListener,
                                         file.delete();
                                         context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)));
                                         player.removeSongFromPlaylist(selectedSong);
-                                        List<SongModel> playlist = player.getPlaylist();
-                                        presenter.updateCurrentPlaylist(playlist);
+                                        presenter.updateCurrentPlaylist(player.getPlaylist());
                                         break;
 
                                     case DialogInterface.BUTTON_NEGATIVE:
@@ -173,8 +172,7 @@ public class AppEventHandler implements View.OnClickListener,
                         SongsDao songsDao = new SongsDao(context);
                         songsDao.setSongBlacklist(selectedSong, 1);
                         player.removeSongFromPlaylist(selectedSong);
-                        List<SongModel> playlist = player.getPlaylist();
-                        presenter.updateCurrentPlaylist(playlist);
+                        presenter.updateCurrentPlaylist(player.getPlaylist());
                         break;
                 }
 
@@ -197,7 +195,7 @@ public class AppEventHandler implements View.OnClickListener,
 
                 List<SongModel> playlist = songsDao.getAllByPlayList(playlistId, getColumnName(position));
                 player.setPlaylist(playlist);
-                presenter.updateCurrentPlaylist(playlist);
+                presenter.updateCurrentPlaylist(player.getPlaylist());
                 presenter.hideSortPopupView();
                 break;
 
@@ -206,7 +204,7 @@ public class AppEventHandler implements View.OnClickListener,
                 String artist = (String) parent.getItemAtPosition(position);
                 playlist = songsDao.getAllByArtist(artist);
                 player.setPlaylist(playlist);
-                presenter.updateCurrentPlaylist(playlist);
+                presenter.updateCurrentPlaylist(player.getPlaylist());
                 break;
 
             case R.id.filterByAlbumItem:
@@ -214,7 +212,7 @@ public class AppEventHandler implements View.OnClickListener,
                 String album = (String) parent.getItemAtPosition(position);
                 playlist = songsDao.getAllByAlbum(album);
                 player.setPlaylist(playlist);
-                presenter.updateCurrentPlaylist(playlist);
+                presenter.updateCurrentPlaylist(player.getPlaylist());
                 break;
 
             case R.id.filterByFolderItem:
@@ -222,7 +220,7 @@ public class AppEventHandler implements View.OnClickListener,
                 String folder = (String) parent.getItemAtPosition(position);
                 playlist = songsDao.getAllByFolder(folder);
                 player.setPlaylist(playlist);
-                presenter.updateCurrentPlaylist(playlist);
+                presenter.updateCurrentPlaylist(player.getPlaylist());
                 break;
 
             case R.id.filterIcon:
@@ -324,7 +322,7 @@ public class AppEventHandler implements View.OnClickListener,
         }
 
         player.setPlaylist(newPlaylist);
-        presenter.updateCurrentPlaylist(newPlaylist);
+        presenter.updateCurrentPlaylist(player.getPlaylist());
         return true;
     }
 
@@ -354,7 +352,7 @@ public class AppEventHandler implements View.OnClickListener,
         List<SongModel> playList = songsDao.getAllByPlayList(1);
         if (player.getPlaylist() == null) {
             player.setPlaylist(playList);
-            presenter.updateCurrentPlaylist(playList);
+            presenter.updateCurrentPlaylist(player.getPlaylist());
         }
     }
 

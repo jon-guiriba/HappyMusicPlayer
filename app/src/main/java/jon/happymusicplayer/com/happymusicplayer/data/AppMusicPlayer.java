@@ -17,6 +17,7 @@ import jon.happymusicplayer.com.happymusicplayer.data.daos.PlaylistsDao;
 import jon.happymusicplayer.com.happymusicplayer.data.daos.SongsDao;
 import jon.happymusicplayer.com.happymusicplayer.data.managers.SettingsManager;
 import jon.happymusicplayer.com.happymusicplayer.data.models.PlayListModel;
+import jon.happymusicplayer.com.happymusicplayer.data.models.Playlist;
 import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 import jon.happymusicplayer.com.happymusicplayer.utils.Utilities;
 
@@ -30,14 +31,14 @@ public class AppMusicPlayer extends MediaPlayer {
     public static final String REPEAT_ALL = "repeat_all";
 
     private Context context;
-    private List<SongModel> playlist;
+//    private List<SongModel> playlist;
+    private Playlist playlist;
     private SongModel song;
     private boolean isPrepared;
     private boolean isShuffle;
     private int playlistIndex;
     private String repeatState;
     private int prevPlayListIndex;
-    private String playlistName;
 
     private final BroadcastReceiver headsetReceiver = new BroadcastReceiver() {
         @Override
@@ -50,6 +51,7 @@ public class AppMusicPlayer extends MediaPlayer {
 
     public AppMusicPlayer(Context context) {
         this.context = context;
+        this.playlist = new Playlist("");
     }
 
 
@@ -96,21 +98,21 @@ public class AppMusicPlayer extends MediaPlayer {
     }
 
     public void setPlaylist(String playListName) {
-        this.playlistName = playListName;
+        this.playlist.setName(playListName);
         PlaylistsDao playlistsDao = new PlaylistsDao(this.context);
         SongsDao songsDao = new SongsDao(this.context);
 
         if (playListName.equals(context.getResources().getString(R.string.recently_added))) {
-            playlist = songsDao.getAllRecentlyAdded();
+            playlist.setSongList(songsDao.getAllRecentlyAdded());
             return;
         }
 
         int playlistId = playlistsDao.getSingleByName(playListName).getId();
-        playlist = songsDao.getAllByPlayList(playlistId);
+        playlist.setSongList(songsDao.getAllByPlayList(playlistId));
     }
 
-    public void setPlaylist(List<SongModel> playlist) {
-        this.playlist = playlist;
+    public void setPlaylist(List<SongModel> songs) {
+        playlist.setSongList(songs);
     }
 
     public void play() {
@@ -220,8 +222,8 @@ public class AppMusicPlayer extends MediaPlayer {
         return repeatState;
     }
 
-    public List<SongModel> getPlaylist() {
-        return this.playlist;
+    public Playlist getPlaylist() {
+        return playlist;
     }
 
     public List<String> getAllPlayLists() {
@@ -253,7 +255,7 @@ public class AppMusicPlayer extends MediaPlayer {
     }
 
     public String getPlaylistName() {
-        return this.playlistName;
+        return playlist.getName();
     }
 
     public boolean isPrepared() {
@@ -270,10 +272,6 @@ public class AppMusicPlayer extends MediaPlayer {
     }
 
     public void removeSongFromPlaylist(SongModel song) {
-        for (SongModel s : playlist) {
-            if (s.getId() == song.getId()) {
-                playlist.remove(s);
-            }
-        }
+        playlist.remove(song);
     }
 }
