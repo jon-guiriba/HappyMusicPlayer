@@ -1,6 +1,5 @@
 package jon.happymusicplayer.com.happymusicplayer.Fragments;
 
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,11 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jon.happymusicplayer.com.happymusicplayer.R;
-import jon.happymusicplayer.com.happymusicplayer.data.AppEventHandler;
+import jon.happymusicplayer.com.happymusicplayer.EventHandlers.AppEventHandler;
 import jon.happymusicplayer.com.happymusicplayer.data.models.Playlist;
 import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 
@@ -51,9 +47,6 @@ public class PlaylistFragment extends Fragment {
                 R.layout.current_playlist_item,
                 playlist.getSongs()
         );
-        Log.i("updating fragment P",  ""  +playlist.size());
         lvPlaylist.setAdapter(playlistAdapter);
     }
-
-
 }

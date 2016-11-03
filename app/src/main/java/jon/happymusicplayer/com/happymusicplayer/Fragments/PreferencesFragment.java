@@ -47,7 +47,7 @@ public class PreferencesFragment extends android.preference.PreferenceFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-        view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorPrimary));
+        view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.white));
 
         return view;
     }

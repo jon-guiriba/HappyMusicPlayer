@@ -19,9 +19,11 @@ public class SongModel implements Parcelable {
     private String album;
     private int duration;
     private String path;
+    private String genre;
     private Date dateModified;
 
-    public SongModel(int id, String title, String artist, String album, int duration, Date dateModified, String path) {
+    public SongModel(int id, String title, String artist, String album,
+                     int duration, Date dateModified, String path, String genre) {
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -29,6 +31,7 @@ public class SongModel implements Parcelable {
         this.duration = duration;
         this.dateModified = dateModified;
         this.path = path;
+        this.genre = genre;
     }
 
     public String getAlbum() {
@@ -63,6 +66,13 @@ public class SongModel implements Parcelable {
         return title;
     }
 
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
 
     protected SongModel(Parcel in) {
         id = in.readInt();

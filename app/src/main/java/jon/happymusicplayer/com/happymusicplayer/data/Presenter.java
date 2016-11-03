@@ -8,7 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.Loader;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -44,7 +44,6 @@ import jon.happymusicplayer.com.happymusicplayer.Fragments.SongDetailsFragment;
 import jon.happymusicplayer.com.happymusicplayer.R;
 import jon.happymusicplayer.com.happymusicplayer.adapters.AppPagerAdapter;
 import jon.happymusicplayer.com.happymusicplayer.data.models.Playlist;
-import jon.happymusicplayer.com.happymusicplayer.data.models.SongModel;
 
 /**
  * Created by Jon on 10/13/2016.
@@ -153,7 +152,7 @@ public class Presenter {
     public void setupSongContextOptionsPopupWindow() {
         songOptions = new ListPopupWindow(context);
         songOptions.setAdapter(new ArrayAdapter<>(context, R.layout.context_menu_item, context.getResources().getTextArray(R.array.context_options)));
-        songOptions.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(context, R.color.colorPrimary)));
+        songOptions.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(context, R.color.white)));
         songOptions.setWidth(300);
         songOptions.setHorizontalOffset(400);
         songOptions.setModal(true);
@@ -206,10 +205,14 @@ public class Presenter {
         addToPlaylistPopupWindow.showAtLocation(((Activity) context).findViewById(R.id.main_relative_layout), Gravity.CENTER, 0, 0);
     }
 
-    public void updateCurrentPlaylist(Playlist playlist) {
-        if (playlist == null) return;
-        Log.i("playlist ", playlist.getName());
-        viewPager.getAdapter().notifyDataSetChanged();
+    public void updatePagerPlaylist() {
+        ((AppPagerAdapter) viewPager.getAdapter()).
+                updateFragment(PlaylistFragment.class.getName());
+    }
+
+    public void updatePagerSongDetails() {
+        ((AppPagerAdapter) viewPager.getAdapter()).
+                updateFragment(SongDetailsFragment.class.getName());
     }
 
     public void loadFilters() {
@@ -302,7 +305,7 @@ public class Presenter {
     }
 
 
-    public void updateSongDetails(String songName, String songDuration) {
+    public void updateSongShortDetails(String songName, String songDuration) {
         tvSongTitle.setText(songName);
         tvSongDuration.setText(songDuration);
     }
@@ -432,7 +435,7 @@ public class Presenter {
     public void setupActionMenuPopupWindow() {
         actionMenu = new ListPopupWindow(context);
         actionMenu.setAdapter(new ArrayAdapter<>(context, R.layout.action_menu_item, context.getResources().getTextArray(R.array.action_menu)));
-        actionMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(context, R.color.colorPrimary)));
+        actionMenu.setBackgroundDrawable(new ColorDrawable(ContextCompat.getColor(context, R.color.white)));
         actionMenu.setWidth(250);
         actionMenu.setModal(true);
     }

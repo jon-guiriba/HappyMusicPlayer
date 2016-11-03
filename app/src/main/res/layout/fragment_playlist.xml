@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="5dp"
-        android:background="@color/colorPrimary"
+        android:background="@color/white"
         android:choiceMode="singleChoice"
         android:listSelector="@drawable/current_playlist_item_bg" />
 

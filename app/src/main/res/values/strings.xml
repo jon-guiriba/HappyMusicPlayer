@@ -24,4 +24,8 @@
     <string name="pref_themes">pref_themes</string>
     <string name="pref_pause_on_disconnect">pref_pause_on_disconnect</string>
     <string name="pref_use_volume_as_navigation">pref_use_volume_as_navigation</string>
+    <string name="song_title">Title</string>
+    <string name="song_artist">Artist</string>
+    <string name="song_album">Album</string>
+    <string name="song_genre">Genre</string>
 </resources>

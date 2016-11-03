@@ -18,10 +18,12 @@ public final class SongsContract {
         public static final String ALBUM = "album";
         public static final String DURATION = "duration";
         public static final String PATH = "path";
+        public static final String GENRE = "genre";
         public static final String DATE_MODIFIED = "date_modified";
         public static final String IS_BLACKLISTED = "is_blacklisted";
 
-        public static final String[] ALL = {ID, TITLE, ARTIST, ALBUM, DURATION, PATH, DATE_MODIFIED,
+        public static final String[] ALL = {ID, TITLE, ARTIST,
+                ALBUM, DURATION, PATH, GENRE, DATE_MODIFIED,
                 IS_BLACKLISTED
         };
 
@@ -34,6 +36,7 @@ public final class SongsContract {
                         ALBUM + " VARCHAR(80) NOT NULL, " +
                         DURATION + " INTEGER NOT NULL, " +
                         PATH + " VARCHAR(255) NOT NULL UNIQUE, " +
+                        GENRE + " VARCHAR(100) NOT NULL, " +
                         DATE_MODIFIED + " DATE NOT NULL DEFAULT CURRENT_DATE, " +
                         IS_BLACKLISTED + " TINYINT NOT NULL DEFAULT 0 " +
                         ")";

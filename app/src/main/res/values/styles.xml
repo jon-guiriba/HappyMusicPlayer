@@ -1,14 +1,14 @@
 <resources>
 
     <style name="AppTheme" parent="@style/Theme.AppCompat.Light">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryDark">@color/black</item>
         <item name="colorAccent">@color/lightBlue</item>
     </style>
 
     <style name="playListListView" parent="android:style/Widget.ListView">
-        <item name="background">@color/colorPrimaryDark</item>
-        <item name="android:divider">@color/colorPrimaryDark</item>
+        <item name="background">@color/black</item>
+        <item name="android:divider">@color/black</item>
         <item name="android:dividerHeight">1dp</item>
         <item name="android:listSelector">@drawable/img_btn_play</item>
         <item name="android:drawSelectorOnTop">true</item>
@@ -23,8 +23,8 @@
     </style>
 
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryDark">@color/black</item>
         <item name="colorAccent">@color/lightBlue</item>
     </style>
 

@@ -300,13 +300,14 @@ public class SongsDao {
         return folders;
     }
 
-    public void addSong(String title, String artist, String album, int duration, String path) {
+    public void addSong(String title, String artist, String album, int duration, String path, String genre) {
         ContentValues cv = new ContentValues();
         cv.put(SongsContract.SongsEntry.TITLE, title);
         cv.put(SongsContract.SongsEntry.ARTIST, artist);
         cv.put(SongsContract.SongsEntry.ALBUM, album);
         cv.put(SongsContract.SongsEntry.DURATION, duration);
         cv.put(SongsContract.SongsEntry.PATH, path);
+        cv.put(SongsContract.SongsEntry.GENRE, genre);
         db.insertWithOnConflict(SongsContract.SongsEntry.TABLE_NAME, null, cv, SQLiteDatabase.CONFLICT_IGNORE);
     }
 
@@ -316,6 +317,7 @@ public class SongsDao {
         String artist = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.ARTIST));
         String album = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.ALBUM));
         String path = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.PATH));
+        String genre = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.GENRE));
         int duration = cursor.getInt(cursor.getColumnIndex(SongsContract.SongsEntry.DURATION));
         String dateModified = cursor.getString(cursor.getColumnIndex(SongsContract.SongsEntry.DATE_MODIFIED));
 
@@ -326,7 +328,7 @@ public class SongsDao {
             e.printStackTrace();
         }
 
-        return new SongModel(id, title, artist, album, duration, date, path);
+        return new SongModel(id, title, artist, album, duration, date, path, genre);
     }
 
     public void deleteSong(SongModel song) {

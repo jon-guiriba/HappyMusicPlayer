@@ -55,9 +55,9 @@ public class AppMusicPlayer extends MediaPlayer {
     }
 
 
-    public void playSong(int index) {
-        playlistIndex = index;
-        song = playlist.get(index);
+    public void playSong(int id) {
+        playlistIndex = getSongIndex(id);
+        song = playlist.get(playlistIndex);
         context.registerReceiver(headsetReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
 
         try {
@@ -71,22 +71,11 @@ public class AppMusicPlayer extends MediaPlayer {
 
     }
 
-    public void playSong(String path) {
-        int index = getPathIndex(path);
-
-        playlistIndex = index;
-        song = playlist.get(index);
-        context.registerReceiver(headsetReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
-
-        try {
-            reset();
-            isPrepared = false;
-            setDataSource(song.getPath());
-            prepareAsync();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private int getSongIndex(int id) {
+        for (int i = 0; i < playlist.size(); i++){
+            if(playlist.get(i).getId() == id) return i;
         }
-
+        return -1;
     }
 
     private int getPathIndex(String path) {

@@ -21,7 +21,7 @@ import android.widget.Toast;
 import java.util.List;
 
 import jon.happymusicplayer.com.happymusicplayer.R;
-import jon.happymusicplayer.com.happymusicplayer.data.AppEventHandler;
+import jon.happymusicplayer.com.happymusicplayer.EventHandlers.AppEventHandler;
 import jon.happymusicplayer.com.happymusicplayer.data.AppMusicPlayer;
 import jon.happymusicplayer.com.happymusicplayer.data.Presenter;
 import jon.happymusicplayer.com.happymusicplayer.data.daos.SongsDao;
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         presenter.updatePlayButton(player.isPlaying());
 
         if (player.getSong() != null)
-            presenter.updateSongDetails(
+            presenter.updateSongShortDetails(
                     player.getSong().getTitle(),
                     Utilities.getDurationAsText(player.getCurrentPosition(), player.getDuration())
             );
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         logPhoneDetails();
         setupEventHandlers();
         loadUserSettings();
-        presenter.updateCurrentPlaylist(player.getPlaylist());
+        presenter.updatePagerPlaylist();
         presenter.updateDrawerPlaylist(player.getAllPlayLists());
         presenter.updateRepeatButton(player.getRepeatState());
         presenter.updateShuffleButton(player.getIsShuffle());

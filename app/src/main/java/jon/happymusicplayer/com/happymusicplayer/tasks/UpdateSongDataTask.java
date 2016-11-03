@@ -2,6 +2,7 @@ package jon.happymusicplayer.com.happymusicplayer.tasks;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class UpdateSongDataTask extends AsyncTask<Object, Void, Void> {
         for (SongModel song : allSongs) {
             playlistItemsDao.addNewPlaylistItem(playList.getId(), song.getId());
         }
-
+        Log.i("UpdateSongDataTask: ", "complete");
         return null;
     }
 
